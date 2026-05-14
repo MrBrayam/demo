@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Registra la matrícula de tu hijo en la Academia de Fútbol El Puntapié de Oro. Proceso rápido, seguro y en línea.">
+    <title>Matrícula — Academia de Fútbol</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<main class="contenedor">
+
+    <header class="encabezado">
+        <h1>Academia de Fútbol</h1>
+        <p class="subtitulo">Registro de Matrícula</p>
+    </header>
+
+    <!-- Indicador de pasos -->
+    <nav class="pasos" aria-label="Progreso del formulario">
+        <span class="paso activo" id="indicador-1">1. Datos</span>
+        <span class="separador">—</span>
+        <span class="paso" id="indicador-2">2. Categoría y Pago</span>
+        <span class="separador">—</span>
+        <span class="paso" id="indicador-3">3. Confirmación</span>
+    </nav>
+
+    <!-- PASO 1: Datos del alumno -->
+    <section id="paso-1" class="seccion-formulario">
+        <h2>Paso 1 — Datos del Alumno</h2>
+
+        <div class="campo">
+            <label for="nombre">Nombre completo *</label>
+            <input type="text" id="nombre" name="nombre"
+                   placeholder="ej. Juan Pérez Ríos" required>
+            <span class="error" id="error-nombre"></span>
+        </div>
+
+        <div class="campo">
+            <label for="fechaNacimiento">Fecha de nacimiento *</label>
+            <input type="date" id="fechaNacimiento" name="fechaNacimiento" required>
+            <span class="error" id="error-fecha"></span>
+        </div>
+
+        <div class="campo">
+            <label for="dni">DNI / Documento *</label>
+            <input type="text" id="dni" name="dni"
+                   placeholder="12345678" maxlength="8" required>
+            <span class="error" id="error-dni"></span>
+        </div>
+
+        <div class="campo">
+            <label for="correoTutor">Correo del tutor *</label>
+            <input type="email" id="correoTutor" name="correoTutor"
+                   placeholder="correo@ejemplo.com" required>
+            <span class="error" id="error-correo"></span>
+        </div>
+
+        <div class="acciones">
+            <button type="button" id="btn-siguiente-1">Siguiente</button>
+        </div>
+    </section>
+
+    <!-- PASO 2: Categoría y pago -->
+    <section id="paso-2" class="seccion-formulario oculto">
+        <h2>Paso 2 — Categoría y Pago</h2>
+
+        <div class="campo">
+            <label for="categoria">Categoría *</label>
+            <select id="categoria" name="categoria" required>
+                <option value="">Seleccione una categoría...</option>
+            </select>
+            <span class="error" id="error-categoria"></span>
+        </div>
+
+        <div class="campo">
+            <label>Monto de matrícula</label>
+            <p class="monto-display" id="montoDisplay">S/ —</p>
+        </div>
+
+        <div class="campo">
+            <label>Método de pago *</label>
+            <div class="opciones-pago">
+                <label class="opcion-radio">
+                    <input type="radio" name="metodoPago" value="TARJETA">
+                    Tarjeta de crédito / débito
+                </label>
+                <label class="opcion-radio">
+                    <input type="radio" name="metodoPago" value="TRANSFERENCIA">
+                    Transferencia bancaria
+                </label>
+            </div>
+            <span class="error" id="error-metodo"></span>
+        </div>
+
+        <div class="campo" id="campo-tarjeta" style="display:none;">
+            <label for="numeroTarjeta">Número de tarjeta *</label>
+            <input type="text" id="numeroTarjeta" name="numeroTarjeta"
+                   placeholder="**** **** **** 1234" maxlength="19">
+            <span class="error" id="error-tarjeta"></span>
+        </div>
+
+        <div class="acciones">
+            <button type="button" id="btn-atras-2">Atrás</button>
+            <button type="button" id="btn-pagar">Pagar</button>
+        </div>
+    </section>
+
+    <!-- PASO 3: Confirmación -->
+    <section id="paso-3" class="seccion-formulario oculto">
+        <h2>Paso 3 — Confirmación</h2>
+        <div class="confirmacion">
+            <p class="titulo-exito">Matrícula registrada con éxito</p>
+            <p>La constancia ha sido enviada al correo del tutor registrado.</p>
+            <p id="referenciaConfirmacion" class="referencia"></p>
+            <div class="acciones">
+                <button type="button" id="btn-descargar">Descargar Constancia PDF</button>
+                <button type="button" id="btn-reiniciar">Volver al inicio</button>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<script src="js/api.js"></script>
+<script src="js/validacion.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
