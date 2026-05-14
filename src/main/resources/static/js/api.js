@@ -8,6 +8,14 @@ async function obtenerCategorias() {
     return response.json();
 }
 
+async function obtenerTransaccionesRecientes(limit = 5) {
+    const response = await fetch(`${API_BASE}/matriculas/recientes?limit=${limit}`);
+    if (!response.ok) {
+        throw new Error('No se pudieron cargar las transacciones recientes.');
+    }
+    return response.json();
+}
+
 async function registrarMatricula(datos) {
     const response = await fetch(`${API_BASE}/matriculas`, {
         method: 'POST',

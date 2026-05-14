@@ -1,5 +1,6 @@
 package futbol.academy.demo.service;
 
+import futbol.academy.demo.dto.MatriculaRecienteDTO;
 import futbol.academy.demo.dto.MatriculaRequestDTO;
 import futbol.academy.demo.dto.MatriculaResponseDTO;
 import futbol.academy.demo.exception.PagoRechazadoException;
@@ -10,10 +11,12 @@ import futbol.academy.demo.model.Matricula;
 import futbol.academy.demo.repository.AlumnoRepository;
 import futbol.academy.demo.repository.CategoriaRepository;
 import futbol.academy.demo.repository.MatriculaRepository;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @Transactional
@@ -85,6 +88,23 @@ public class MatriculaService {
         Matricula matricula = matriculaRepository.findById(matriculaId)
             .orElseThrow(() -> new RuntimeException("Matrícula no encontrada con ID: " + matriculaId));
         return pdfService.generarConstancia(matricula);
+    }
+
+    public List<MatriculaRecienteDTO> obtenerRecientes(int limit) {
+        int safeLimit = Math.max(1, limit);
+        return matriculaRepository
+            .findAllByOrderByFechaRegistroDesc(PageRequest.of(0, safeLimit))
+            .stream()
+            .map(m -> new MatriculaRecienteDTO(
+                m.getId(),
+                m.getAlumno() != null ? m.getAlumno().getNombreCompleto() : "N/A",
+                m.getCategoria() != null ? m.getCategoria().getNombre() : "N/A",
+                m.getCategoria() != null ? m.getCategoria().getMontoMatricula() : null,
+                m.getFechaRegistro(),
+                m.getEstado() != null ? m.getEstado().name() : "N/A",
+                m.getReferenciaPago()
+            ))
+            .toList();
     }
 
     public Alumno verificarOCrearAlumno(MatriculaRequestDTO request) {

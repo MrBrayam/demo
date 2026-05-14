@@ -30,7 +30,7 @@ public class Matricula {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private EstadoMatricula estado;   // PENDIENTE, CONFIRMADA, RECHAZADA, EN_ESPERA
+    private EstadoMatricula estado; 
 
     @Column(length = 100)
     private String referenciaPago;

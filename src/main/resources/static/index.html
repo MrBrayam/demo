@@ -166,6 +166,30 @@
 
     </main>
 
+    <section class="recent-panel" id="transacciones-recientes">
+        <div class="recent-header">
+            <h2>Transacciones recientes</h2>
+            <p>Ultimas matriculas registradas</p>
+        </div>
+        <div class="recent-table-wrapper">
+            <table class="recent-table">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Alumno</th>
+                        <th>Categoria</th>
+                        <th>Monto</th>
+                        <th>Estado</th>
+                        <th>Referencia</th>
+                    </tr>
+                </thead>
+                <tbody id="recent-body">
+                    <tr><td colspan="6" class="tabla-cargando">Cargando...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
 <script src="js/api.js"></script>
 <script src="js/validacion.js"></script>
 <script src="js/main.js"></script>

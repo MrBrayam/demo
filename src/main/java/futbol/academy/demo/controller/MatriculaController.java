@@ -1,5 +1,6 @@
 package futbol.academy.demo.controller;
 
+import futbol.academy.demo.dto.MatriculaRecienteDTO;
 import futbol.academy.demo.dto.MatriculaRequestDTO;
 import futbol.academy.demo.dto.MatriculaResponseDTO;
 import futbol.academy.demo.exception.PagoRechazadoException;
@@ -41,12 +42,21 @@ public class MatriculaController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @GetMapping("/recientes")
+    public ResponseEntity<List<MatriculaRecienteDTO>> listarRecientes(
+            @RequestParam(value = "limit", defaultValue = "5") int limit) {
+        int safeLimit = Math.min(Math.max(limit, 1), 50);
+        return ResponseEntity.ok(matriculaService.obtenerRecientes(safeLimit));
+    }
+
+
     @PostMapping("/verificar-alumno")
     public ResponseEntity<Void> verificarAlumno(@RequestBody MatriculaRequestDTO request) {
         matriculaService.verificarOCrearAlumno(request);
         return ResponseEntity.ok().build();
     }
 
+    // RF-06: Descargar constancia TXT
     @GetMapping("/{id}/constancia")
     public ResponseEntity<byte[]> descargarConstancia(@PathVariable Long id) {
         byte[] txt = matriculaService.obtenerConstancia(id);
@@ -56,11 +66,13 @@ public class MatriculaController {
             .body(txt);
     }
 
+    // Manejador de excepción sin cupos
     @ExceptionHandler(SinCuposException.class)
     public ResponseEntity<String> manejarSinCupos(SinCuposException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
     }
 
+    // Manejador de pago rechazado
     @ExceptionHandler(PagoRechazadoException.class)
     public ResponseEntity<String> manejarPagoRechazado(PagoRechazadoException ex) {
         return ResponseEntity.status(HttpStatus.PAYMENT_REQUIRED).body(ex.getMessage());

@@ -18,7 +18,7 @@ public class Categoria {
     private Long id;
 
     @Column(nullable = false, length = 50)
-    private String nombre;        // Infantil, Junior, Sub-17
+    private String nombre;    
 
     @Column(nullable = false)
     private int edadMinima;

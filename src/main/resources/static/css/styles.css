@@ -311,6 +311,97 @@ button:disabled {
     font-size: 12px;
 }
 
+.recent-panel {
+    max-width: 1200px;
+    margin: 0 auto 40px;
+    padding: 0 20px;
+}
+
+.recent-header {
+    margin: 20px 0 12px;
+}
+
+.recent-header h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--green-dark);
+}
+
+.recent-header p {
+    font-size: 13px;
+    color: var(--gray-600);
+}
+
+.recent-table-wrapper {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    overflow-x: auto;
+}
+
+.recent-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.recent-table thead {
+    background: var(--gray-100);
+}
+
+.recent-table th,
+.recent-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--gray-200);
+    text-align: left;
+    white-space: nowrap;
+}
+
+.recent-table th {
+    font-weight: 700;
+    color: var(--gray-600);
+}
+
+.tabla-cargando {
+    text-align: center;
+    color: var(--gray-600);
+}
+
+.estado-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 8px;
+    border-radius: 12px;
+    border: 1px solid var(--gray-200);
+    font-weight: 600;
+    font-size: 11px;
+}
+
+.estado-confirmada {
+    background: var(--green-light);
+    color: var(--green-dark);
+    border-color: #cfe5cf;
+}
+
+.estado-rechazada {
+    background: #f3d6d6;
+    color: #7a1c1c;
+    border-color: #e6bcbc;
+}
+
+.estado-pendiente {
+    background: #fff2d8;
+    color: var(--orange-dark);
+    border-color: #f3ddb0;
+}
+
+.estado-en-espera {
+    background: #e6e6e6;
+    color: #4d4d4d;
+    border-color: #d4d4d4;
+}
+
 @media (max-width: 900px) {
     .main-content {
         flex-direction: column;
@@ -323,5 +414,9 @@ button:disabled {
     .arrow-separator {
         transform: rotate(90deg);
         margin: 10px 0;
+    }
+
+    .recent-panel {
+        margin-top: 20px;
     }
 }

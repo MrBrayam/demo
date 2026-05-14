@@ -31,6 +31,6 @@ public class Alumno {
     private String correoTutor;
 
     @OneToMany(mappedBy = "alumno", cascade = CascadeType.ALL)
-    @ToString.Exclude   // evita bucle infinito en toString con relacion bidireccional
+    @ToString.Exclude 
     private List<Matricula> matriculas;
 }

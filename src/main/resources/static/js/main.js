@@ -83,6 +83,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('placeholder-btn-descargar').style.display = 'none';
             
             document.getElementById('pagar-label').textContent = 'Pagado';
+            cargarTransaccionesRecientes();
         } catch (error) {
             alert(error.message);
             boton.disabled = false;
@@ -99,6 +100,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     actualizarMontoYBoton();
+    cargarTransaccionesRecientes();
 });
 
 function actualizarMontoYBoton() {
@@ -107,4 +109,62 @@ function actualizarMontoYBoton() {
     const montoTexto = cat ? `S/ ${cat.montoMatricula}` : 'S/ 150.00';
     document.getElementById('montoDisplay').textContent = montoTexto;
     document.getElementById('pagar-label').textContent = cat ? `Pagar ${montoTexto}` : 'Pagar S/ 150.00';
+}
+
+async function cargarTransaccionesRecientes() {
+    const tbody = document.getElementById('recent-body');
+    if (!tbody) return;
+
+    tbody.innerHTML = '<tr><td colspan="6" class="tabla-cargando">Cargando...</td></tr>';
+
+    try {
+        const items = await obtenerTransaccionesRecientes(5);
+        if (!items.length) {
+            tbody.innerHTML = '<tr><td colspan="6" class="tabla-cargando">Sin transacciones recientes.</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = items.map(item => {
+            const fecha = formatearFecha(item.fechaRegistro);
+            const monto = item.montoMatricula != null
+                ? `S/ ${Number(item.montoMatricula).toFixed(2)}`
+                : 'S/ -';
+            const estadoClase = obtenerClaseEstado(item.estado);
+            const referencia = item.referenciaPago || 'N/A';
+
+            return `
+                <tr>
+                    <td>${fecha}</td>
+                    <td>${item.alumno || 'N/A'}</td>
+                    <td>${item.categoria || 'N/A'}</td>
+                    <td>${monto}</td>
+                    <td><span class="estado-badge ${estadoClase}">${item.estado || 'N/A'}</span></td>
+                    <td>${referencia}</td>
+                </tr>
+            `;
+        }).join('');
+    } catch (error) {
+        tbody.innerHTML = '<tr><td colspan="6" class="tabla-cargando">Error al cargar transacciones.</td></tr>';
+    }
+}
+
+function formatearFecha(fechaStr) {
+    if (!fechaStr) return '-';
+    const fecha = new Date(fechaStr);
+    if (Number.isNaN(fecha.getTime())) return fechaStr;
+    const fechaTexto = fecha.toLocaleDateString('es-PE', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+    });
+    const horaTexto = fecha.toLocaleTimeString('es-PE', {
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+    return `${fechaTexto} ${horaTexto}`;
+}
+
+function obtenerClaseEstado(estado) {
+    if (!estado) return 'estado-pendiente';
+    return `estado-${estado.toLowerCase().replace(/_/g, '-')}`;
 }
