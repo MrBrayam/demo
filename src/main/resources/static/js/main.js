@@ -99,6 +99,27 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
+    document.getElementById('recent-body').addEventListener('click', function(e) {
+        const btn = e.target.closest('.btn-generar-txt');
+        if (btn) {
+            const item = JSON.parse(decodeURIComponent(btn.getAttribute('data-transaccion')));
+            const fecha = formatearFecha(item.fechaRegistro);
+            const monto = item.montoMatricula != null ? `S/ ${Number(item.montoMatricula).toFixed(2)}` : 'S/ -';
+            const referencia = item.referenciaPago || 'N/A';
+            const contenido = `Detalle de Transacción\n======================\nFecha: ${fecha}\nAlumno: ${item.alumno || 'N/A'}\nCategoría: ${item.categoria || 'N/A'}\nMonto: ${monto}\nEstado: ${item.estado || 'N/A'}\nReferencia: ${referencia}\n`;
+            
+            const blob = new Blob([contenido], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Transaccion_${referencia}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+    });
+
     actualizarMontoYBoton();
     cargarTransaccionesRecientes();
 });
@@ -115,12 +136,12 @@ async function cargarTransaccionesRecientes() {
     const tbody = document.getElementById('recent-body');
     if (!tbody) return;
 
-    tbody.innerHTML = '<tr><td colspan="6" class="tabla-cargando">Cargando...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" class="tabla-cargando">Cargando...</td></tr>';
 
     try {
         const items = await obtenerTransaccionesRecientes(5);
         if (!items.length) {
-            tbody.innerHTML = '<tr><td colspan="6" class="tabla-cargando">Sin transacciones recientes.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="7" class="tabla-cargando">Sin transacciones recientes.</td></tr>';
             return;
         }
 
@@ -140,11 +161,16 @@ async function cargarTransaccionesRecientes() {
                     <td>${monto}</td>
                     <td><span class="estado-badge ${estadoClase}">${item.estado || 'N/A'}</span></td>
                     <td>${referencia}</td>
+                    <td>
+                        <button class="btn-generar-txt" data-transaccion='${encodeURIComponent(JSON.stringify(item))}'>
+                            Generar .txt
+                        </button>
+                    </td>
                 </tr>
             `;
         }).join('');
     } catch (error) {
-        tbody.innerHTML = '<tr><td colspan="6" class="tabla-cargando">Error al cargar transacciones.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" class="tabla-cargando">Error al cargar transacciones.</td></tr>';
     }
 }
 

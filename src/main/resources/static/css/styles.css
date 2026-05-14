@@ -238,6 +238,15 @@ button {
     color: var(--white);
 }
 
+.btn-generar-txt {
+    background: var(--green-dark);
+    color: var(--white);
+    padding: 6px 12px;
+    font-size: 12px;
+    width: auto;
+    border-radius: 4px;
+}
+
 .placeholder-boton {
     background: var(--green-dark);
     color: var(--white);
