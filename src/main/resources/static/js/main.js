@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         categorias.forEach(cat => {
             const option = document.createElement('option');
             option.value = cat.id;
-            option.textContent = `${cat.nombre} (${cat.cuposDisponibles} cupos) — S/ ${cat.montoMatricula}`;
+            option.textContent = `${cat.nombre} / Edad ${cat.edadMinima}-${cat.edadMaxima}`;
             select.appendChild(option);
         });
     } catch (error) {
@@ -31,23 +31,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Paso 1 -> Paso 2
     document.getElementById('btn-siguiente-1').addEventListener('click', () => {
         if (validarPaso1()) {
-            mostrarPaso(2);
+            document.getElementById('paso-2').classList.remove('disabled-panel');
+            document.getElementById('arrow-1').classList.add('active');
+            document.getElementById('btn-pagar').disabled = false;
         }
     });
 
-    // Paso 2 -> Paso 1
-    document.getElementById('btn-atras-2').addEventListener('click', () => {
-        mostrarPaso(1);
-    });
-
-    // Pagar
+    // Pagar (Paso 2 -> Paso 3)
     document.getElementById('btn-pagar').addEventListener('click', async () => {
         if (!validarPaso2()) return;
 
         const boton = document.getElementById('btn-pagar');
-        const pagarLabel = document.getElementById('pagar-label');
         boton.disabled = true;
-        pagarLabel.textContent = 'Procesando...';
+        document.getElementById('pagar-label').textContent = 'Procesando...';
 
         const datos = {
             nombreCompleto: document.getElementById('nombre').value.trim(),
@@ -62,9 +58,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         try {
             const respuesta = await registrarMatricula(datos);
             matriculaIdConfirmada = respuesta.matriculaId;
-            document.getElementById('referenciaConfirmacion').textContent =
-                'Referencia de pago: ' + respuesta.referenciaPago;
-            mostrarPaso(3);
+            document.getElementById('referenciaConfirmacion').textContent = 'Ref: ' + respuesta.referenciaPago;
+            
+            // Habilitar panel 3
+            document.getElementById('paso-3').classList.remove('disabled-panel');
+            document.getElementById('arrow-2').classList.add('active');
+            document.getElementById('btn-descargar').style.display = 'inline-flex';
+            document.getElementById('placeholder-btn-descargar').style.display = 'none';
+            
+            document.getElementById('pagar-label').textContent = 'Pagado';
         } catch (error) {
             alert(error.message);
             boton.disabled = false;
@@ -81,33 +83,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-    // Reiniciar formulario
-    document.getElementById('btn-reiniciar').addEventListener('click', () => {
-        location.reload();
-    });
     actualizarMontoYBoton();
 });
 
 function actualizarMontoYBoton() {
     const select = document.getElementById('categoria');
     const cat = categorias.find(c => c.id == select.value);
-    const montoTexto = cat ? `S/ ${cat.montoMatricula}` : 'S/ —';
+    const montoTexto = cat ? `S/ ${cat.montoMatricula}` : 'S/ 150.00';
     document.getElementById('montoDisplay').textContent = montoTexto;
-    document.getElementById('pagar-label').textContent = cat ? `Pagar ${montoTexto}` : 'Pagar S/ —';
-}
-
-function mostrarPaso(numero) {
-    [1, 2, 3].forEach(n => {
-        document.getElementById(`paso-${n}`).classList.toggle('oculto', n !== numero);
-        const step = document.getElementById(`step-${n}`);
-        if (step) {
-            step.classList.toggle('activo', n === numero);
-            step.classList.toggle('completo', n < numero);
-        }
-    });
-
-    const line1 = document.getElementById('line-1');
-    const line2 = document.getElementById('line-2');
-    if (line1) line1.classList.toggle('activo', numero > 1);
-    if (line2) line2.classList.toggle('activo', numero > 2);
+    document.getElementById('pagar-label').textContent = cat ? `Pagar ${montoTexto}` : 'Pagar S/ 150.00';
 }

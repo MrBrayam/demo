@@ -15,43 +15,25 @@
     <!-- Cabecera global -->
     <header class="global-header">
         <div class="global-header-inner">
-            <span class="global-logo">AF</span>
+            <span class="global-logo">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+            </span>
             <div>
-                <h1 class="global-title">Academia de Fútbol</h1>
-                <p class="global-subtitle">Sistema de Matrícula en Línea</p>
+                <h1 class="global-title">Prototipo de Interfaz — Wireframe</h1>
+            </div>
+            <div class="global-step-indicator">
+                05
             </div>
         </div>
     </header>
-
-    <div class="flow-hint">
-        Flujo de pantallas: Datos del Alumno &gt; Categoría y Pago &gt; Confirmación
-    </div>
-
-    <!-- Barra de progreso -->
-    <div class="progreso-bar">
-        <div class="progreso-inner">
-            <div class="step activo" id="step-1">
-                <div class="step-circle">1</div>
-                <span class="step-label">Datos del Alumno</span>
-            </div>
-            <div class="step-line" id="line-1"></div>
-            <div class="step" id="step-2">
-                <div class="step-circle">2</div>
-                <span class="step-label">Categoría y Pago</span>
-            </div>
-            <div class="step-line" id="line-2"></div>
-            <div class="step" id="step-3">
-                <div class="step-circle">3</div>
-                <span class="step-label">Confirmación</span>
-            </div>
-        </div>
-    </div>
-
     <main class="main-content">
 
         <!-- ══════════ PASO 1 ══════════ -->
         <div class="panel" id="paso-1">
             <div class="panel-header">
+                <span class="panel-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                </span>
                 <span class="panel-title">Paso 1 · Datos del Alumno</span>
             </div>
             <div class="panel-body">
@@ -80,18 +62,27 @@
                     <span class="error" id="error-correo"></span>
                 </div>
 
-                <div class="panel-actions">
+                <div class="panel-actions mt-auto">
                     <button type="button" class="btn-siguiente" id="btn-siguiente-1">
-                        Siguiente
+                        Siguiente 
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 4px; vertical-align: middle;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
                     </button>
                 </div>
 
             </div>
         </div>
 
+        <!-- FLECHA 1 -->
+        <div class="arrow-separator" id="arrow-1">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#f0a11a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </div>
+
         <!-- ══════════ PASO 2 ══════════ -->
-        <div class="panel oculto" id="paso-2">
+        <div class="panel disabled-panel" id="paso-2">
             <div class="panel-header">
+                <span class="panel-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                </span>
                 <span class="panel-title">Paso 2 · Categoría y Pago</span>
             </div>
             <div class="panel-body">
@@ -106,7 +97,7 @@
 
                 <div class="campo">
                     <label>Monto de matrícula</label>
-                    <div class="monto-display" id="montoDisplay">S/ —</div>
+                    <div class="monto-display" id="montoDisplay">S/ 150.00</div>
                 </div>
 
                 <div class="campo">
@@ -115,12 +106,7 @@
                         <label class="radio-option">
                             <input type="radio" name="metodoPago" value="TARJETA" id="radio-tarjeta">
                             <span class="radio-custom"></span>
-                            Tarjeta de crédito / débito
-                        </label>
-                        <label class="radio-option">
-                            <input type="radio" name="metodoPago" value="TRANSFERENCIA" id="radio-transferencia">
-                            <span class="radio-custom"></span>
-                            Transferencia bancaria
+                            Tarjeta / Transferencia
                         </label>
                     </div>
                     <span class="error" id="error-metodo"></span>
@@ -132,42 +118,55 @@
                     <span class="error" id="error-tarjeta"></span>
                 </div>
 
-                <div class="panel-actions two">
-                    <button type="button" class="btn-atras" id="btn-atras-2">Atrás</button>
-                    <button type="button" class="btn-pagar" id="btn-pagar">
-                        <span id="pagar-label">Pagar S/ —</span>
+                <div class="panel-actions mt-auto text-center">
+                    <button type="button" class="btn-pagar" id="btn-pagar" disabled>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: middle;"><rect x="2" y="5" width="20" height="14" rx="2" ry="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
+                        <span id="pagar-label">Pagar S/ 150.00</span>
                     </button>
                 </div>
 
             </div>
         </div>
 
+        <!-- FLECHA 2 -->
+        <div class="arrow-separator" id="arrow-2">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#f0a11a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </div>
+
         <!-- ══════════ PASO 3 ══════════ -->
-        <div class="panel oculto" id="paso-3">
+        <div class="panel disabled-panel" id="paso-3">
             <div class="panel-header">
+                <span class="panel-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+                </span>
                 <span class="panel-title">Paso 3 · Confirmación</span>
             </div>
             <div class="panel-body confirmacion-body">
 
-                <div class="check-circle">
-                    <svg viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="26" cy="26" r="25" stroke="#2f6d2f" stroke-width="2" fill="#e7f3e7"/>
-                        <path d="M14 27L22 35L38 19" stroke="#2f6d2f" stroke-width="3.5"
-                              stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
+                <div class="check-circle-wrapper">
+                    <div class="check-circle">
+                        <svg viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="26" cy="26" r="25" stroke="#2f6d2f" stroke-width="1.5" fill="#e7f3e7"/>
+                            <path d="M16 26L23 33L36 18" stroke="#2f6d2f" stroke-width="3"
+                                  stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
                 </div>
 
-                <h2 class="exito-titulo">¡Matrícula registrada con éxito!</h2>
-                <p class="exito-desc">Constancia enviada al correo del tutor.</p>
+                <h2 class="exito-titulo">¡Matrícula registrada<br>con éxito!</h2>
+                <p class="exito-desc">Constancia enviada al<br>correo del tutor.</p>
                 <p class="exito-ref" id="referenciaConfirmacion"></p>
 
-                <div class="panel-actions col">
-                    <button type="button" class="btn-descargar" id="btn-descargar">
+                <div class="panel-actions col mt-auto text-center">
+                    <button type="button" class="btn-descargar" id="btn-descargar" style="display:none">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: middle;"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
                         Descargar Constancia
                     </button>
-                    <button type="button" class="btn-atras" id="btn-reiniciar">
-                        Nueva matrícula
-                    </button>
+                    <!-- Agrego un texto placeholder para mantener la misma altura al estar disabled -->
+                    <div class="placeholder-boton" id="placeholder-btn-descargar">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: middle;"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                        Descargar Constancia
+                    </div>
                 </div>
 
             </div>
