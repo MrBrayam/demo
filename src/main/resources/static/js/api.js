@@ -42,7 +42,7 @@ async function registrarMatricula(datos) {
 }
 
 /**
- * Descarga la constancia PDF de una matrícula confirmada.
+ * Descarga la constancia de una matrícula confirmada en formato TXT.
  * Endpoint: GET /api/matriculas/{id}/constancia
  */
 async function descargarConstancia(matriculaId) {
@@ -54,7 +54,23 @@ async function descargarConstancia(matriculaId) {
     const url = URL.createObjectURL(blob);
     const enlace = document.createElement('a');
     enlace.href = url;
-    enlace.download = `constancia_${matriculaId}.pdf`;
+    enlace.download = `constancia_${matriculaId}.txt`;
     enlace.click();
     URL.revokeObjectURL(url);
+}
+
+/**
+ * Verifica si el alumno existe y si no, lo crea (Paso 1).
+ * Endpoint: POST /api/matriculas/verificar-alumno
+ */
+async function verificarAlumno(datos) {
+    const response = await fetch(`${API_BASE}/matriculas/verificar-alumno`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(datos)
+    });
+
+    if (!response.ok) {
+        throw new Error('Error al verificar o crear el alumno. Comprueba los datos.');
+    }
 }

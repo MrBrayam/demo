@@ -48,8 +48,7 @@ public class MatriculaService {
         }
 
         // 2. Registrar o recuperar alumno
-        Alumno alumno = alumnoRepository.findByDni(request.getDni())
-            .orElseGet(() -> crearAlumno(request));
+        Alumno alumno = verificarOCrearAlumno(request);
 
         // 3. Crear matrícula en estado PENDIENTE
         Matricula matricula = new Matricula();
@@ -86,6 +85,11 @@ public class MatriculaService {
         Matricula matricula = matriculaRepository.findById(matriculaId)
             .orElseThrow(() -> new RuntimeException("Matrícula no encontrada con ID: " + matriculaId));
         return pdfService.generarConstancia(matricula);
+    }
+
+    public Alumno verificarOCrearAlumno(MatriculaRequestDTO request) {
+        return alumnoRepository.findByDni(request.getDni())
+            .orElseGet(() -> crearAlumno(request));
     }
 
     private Alumno crearAlumno(MatriculaRequestDTO request) {

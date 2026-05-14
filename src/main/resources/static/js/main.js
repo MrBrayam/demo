@@ -29,11 +29,33 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     // Paso 1 -> Paso 2
-    document.getElementById('btn-siguiente-1').addEventListener('click', () => {
+    document.getElementById('btn-siguiente-1').addEventListener('click', async () => {
         if (validarPaso1()) {
-            document.getElementById('paso-2').classList.remove('disabled-panel');
-            document.getElementById('arrow-1').classList.add('active');
-            document.getElementById('btn-pagar').disabled = false;
+            const btnSiguiente = document.getElementById('btn-siguiente-1');
+            const textoOriginal = btnSiguiente.textContent;
+            btnSiguiente.textContent = 'Verificando...';
+            btnSiguiente.disabled = true;
+
+            const datosPaso1 = {
+                nombreCompleto: document.getElementById('nombre').value.trim(),
+                fechaNacimiento: document.getElementById('fechaNacimiento').value,
+                dni: document.getElementById('dni').value.trim(),
+                correoTutor: document.getElementById('correoTutor').value.trim(),
+                categoriaId: parseInt(document.getElementById('categoria').value),
+                metodoPago: "TARJETA" // Se enviará un valor por defecto para pasar la validación parcial del DTO
+            };
+
+            try {
+                await verificarAlumno(datosPaso1);
+                document.getElementById('paso-2').classList.remove('disabled-panel');
+                document.getElementById('arrow-1').classList.add('active');
+                document.getElementById('btn-pagar').disabled = false;
+            } catch (error) {
+                alert(error.message);
+            } finally {
+                btnSiguiente.textContent = textoOriginal;
+                btnSiguiente.disabled = false;
+            }
         }
     });
 

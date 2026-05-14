@@ -43,14 +43,21 @@ public class MatriculaController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    // RF-06: Descargar constancia PDF
+    // Verificar o crear alumno en el Paso 1
+    @PostMapping("/verificar-alumno")
+    public ResponseEntity<Void> verificarAlumno(@RequestBody MatriculaRequestDTO request) {
+        matriculaService.verificarOCrearAlumno(request);
+        return ResponseEntity.ok().build();
+    }
+
+    // RF-06: Descargar constancia TXT
     @GetMapping("/{id}/constancia")
     public ResponseEntity<byte[]> descargarConstancia(@PathVariable Long id) {
-        byte[] pdf = matriculaService.obtenerConstancia(id);
+        byte[] txt = matriculaService.obtenerConstancia(id);
         return ResponseEntity.ok()
-            .header(HttpHeaders.CONTENT_TYPE, "application/pdf")
-            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=constancia_" + id + ".pdf")
-            .body(pdf);
+            .header(HttpHeaders.CONTENT_TYPE, "text/plain")
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=constancia_" + id + ".txt")
+            .body(txt);
     }
 
     // Manejador de excepción sin cupos
