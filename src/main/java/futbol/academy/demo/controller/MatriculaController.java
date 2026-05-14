@@ -29,13 +29,11 @@ public class MatriculaController {
         this.categoriaRepository = categoriaRepository;
     }
 
-    // RF-02: Consultar disponibilidad de cupos
     @GetMapping("/categorias")
     public ResponseEntity<List<Categoria>> listarCategorias() {
         return ResponseEntity.ok(categoriaRepository.findAll());
     }
 
-    // RF-01 / RF-03 / RF-04 / RF-05: Registrar matrícula completa
     @PostMapping
     public ResponseEntity<MatriculaResponseDTO> registrar(
             @Validated @RequestBody MatriculaRequestDTO request) {
@@ -43,14 +41,12 @@ public class MatriculaController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    // Verificar o crear alumno en el Paso 1
     @PostMapping("/verificar-alumno")
     public ResponseEntity<Void> verificarAlumno(@RequestBody MatriculaRequestDTO request) {
         matriculaService.verificarOCrearAlumno(request);
         return ResponseEntity.ok().build();
     }
 
-    // RF-06: Descargar constancia TXT
     @GetMapping("/{id}/constancia")
     public ResponseEntity<byte[]> descargarConstancia(@PathVariable Long id) {
         byte[] txt = matriculaService.obtenerConstancia(id);
@@ -60,13 +56,11 @@ public class MatriculaController {
             .body(txt);
     }
 
-    // Manejador de excepción sin cupos
     @ExceptionHandler(SinCuposException.class)
     public ResponseEntity<String> manejarSinCupos(SinCuposException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
     }
 
-    // Manejador de pago rechazado
     @ExceptionHandler(PagoRechazadoException.class)
     public ResponseEntity<String> manejarPagoRechazado(PagoRechazadoException ex) {
         return ResponseEntity.status(HttpStatus.PAYMENT_REQUIRED).body(ex.getMessage());

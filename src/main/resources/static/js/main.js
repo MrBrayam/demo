@@ -3,7 +3,6 @@ let matriculaIdConfirmada = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
 
-    // Cargar categorías al iniciar
     try {
         categorias = await obtenerCategorias();
         const select = document.getElementById('categoria');
@@ -17,10 +16,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         alert('Error al cargar categorías: ' + error.message);
     }
 
-    // Actualizar monto al elegir categoría
     document.getElementById('categoria').addEventListener('change', actualizarMontoYBoton);
 
-    // Mostrar campo tarjeta según método
     document.querySelectorAll('input[name="metodoPago"]').forEach(radio => {
         radio.addEventListener('change', function () {
             const campoTarjeta = document.getElementById('campo-tarjeta');
@@ -28,7 +25,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     });
 
-    // Paso 1 -> Paso 2
     document.getElementById('btn-siguiente-1').addEventListener('click', async () => {
         if (validarPaso1()) {
             const btnSiguiente = document.getElementById('btn-siguiente-1');
@@ -42,7 +38,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 dni: document.getElementById('dni').value.trim(),
                 correoTutor: document.getElementById('correoTutor').value.trim(),
                 categoriaId: parseInt(document.getElementById('categoria').value),
-                metodoPago: "TARJETA" // Se enviará un valor por defecto para pasar la validación parcial del DTO
+                metodoPago: "TARJETA" 
             };
 
             try {
@@ -59,7 +55,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-    // Pagar (Paso 2 -> Paso 3)
     document.getElementById('btn-pagar').addEventListener('click', async () => {
         if (!validarPaso2()) return;
 
@@ -74,7 +69,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             correoTutor: document.getElementById('correoTutor').value.trim(),
             categoriaId: parseInt(document.getElementById('categoria').value),
             metodoPago: document.querySelector('input[name="metodoPago"]:checked').value,
-            tokenPago: 'tok_test_simulado'  // En producción: token real de pasarela
+            tokenPago: 'tok_test_simulado'  
         };
 
         try {
@@ -82,7 +77,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             matriculaIdConfirmada = respuesta.matriculaId;
             document.getElementById('referenciaConfirmacion').textContent = 'Ref: ' + respuesta.referenciaPago;
             
-            // Habilitar panel 3
             document.getElementById('paso-3').classList.remove('disabled-panel');
             document.getElementById('arrow-2').classList.add('active');
             document.getElementById('btn-descargar').style.display = 'inline-flex';
@@ -96,7 +90,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-    // Descargar constancia
     document.getElementById('btn-descargar').addEventListener('click', async () => {
         try {
             await descargarConstancia(matriculaIdConfirmada);

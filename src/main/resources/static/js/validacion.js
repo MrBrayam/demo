@@ -1,7 +1,3 @@
-/**
- * Valida los campos del Paso 1.
- * Retorna true si todos los campos son válidos.
- */
 function validarPaso1() {
     let valido = true;
 
@@ -41,9 +37,6 @@ function validarPaso1() {
     return valido;
 }
 
-/**
- * Valida los campos del Paso 2.
- */
 function validarPaso2() {
     let valido = true;
 

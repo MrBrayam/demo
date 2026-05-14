@@ -1,10 +1,5 @@
-// URL base del backend Spring Boot
 const API_BASE = 'http://localhost:8080/api';
 
-/**
- * Obtiene las categorías disponibles con sus cupos y montos.
- * Endpoint: GET /api/matriculas/categorias
- */
 async function obtenerCategorias() {
     const response = await fetch(`${API_BASE}/matriculas/categorias`);
     if (!response.ok) {
@@ -13,10 +8,6 @@ async function obtenerCategorias() {
     return response.json();
 }
 
-/**
- * Envía el formulario completo al backend para registrar la matrícula.
- * Endpoint: POST /api/matriculas
- */
 async function registrarMatricula(datos) {
     const response = await fetch(`${API_BASE}/matriculas`, {
         method: 'POST',
@@ -26,12 +17,12 @@ async function registrarMatricula(datos) {
 
     if (response.status === 409) {
         const mensaje = await response.text();
-        throw new Error(mensaje);   // Sin cupos
+        throw new Error(mensaje);   
     }
 
     if (response.status === 402) {
         const mensaje = await response.text();
-        throw new Error(mensaje);   // Pago rechazado
+        throw new Error(mensaje);  
     }
 
     if (!response.ok) {
@@ -41,10 +32,6 @@ async function registrarMatricula(datos) {
     return response.json();
 }
 
-/**
- * Descarga la constancia de una matrícula confirmada en formato TXT.
- * Endpoint: GET /api/matriculas/{id}/constancia
- */
 async function descargarConstancia(matriculaId) {
     const response = await fetch(`${API_BASE}/matriculas/${matriculaId}/constancia`);
     if (!response.ok) {
@@ -59,10 +46,7 @@ async function descargarConstancia(matriculaId) {
     URL.revokeObjectURL(url);
 }
 
-/**
- * Verifica si el alumno existe y si no, lo crea (Paso 1).
- * Endpoint: POST /api/matriculas/verificar-alumno
- */
+/*Verifica si el alumno existe y si no, lo crea*/
 async function verificarAlumno(datos) {
     const response = await fetch(`${API_BASE}/matriculas/verificar-alumno`, {
         method: 'POST',

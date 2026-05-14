@@ -29,7 +29,7 @@ public class MatriculaRequestDTO {
     private Long categoriaId;
 
     @NotBlank(message = "El metodo de pago es obligatorio")
-    private String metodoPago;   // "TARJETA" | "TRANSFERENCIA"
+    private String metodoPago;   
 
-    private String tokenPago;    // token generado por la pasarela en el cliente
+    private String tokenPago;   
 }
