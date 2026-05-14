@@ -3,124 +3,177 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Registra la matrícula de tu hijo en la Academia de Fútbol El Puntapié de Oro. Proceso rápido, seguro y en línea.">
+    <meta name="description" content="Registra la matrícula de tu hijo en la Academia de Fútbol. Proceso en línea rápido y seguro.">
     <title>Matrícula — Academia de Fútbol</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
-<main class="contenedor">
-
-    <header class="encabezado">
-        <h1>Academia de Fútbol</h1>
-        <p class="subtitulo">Registro de Matrícula</p>
+    <!-- Cabecera global -->
+    <header class="global-header">
+        <div class="global-header-inner">
+            <span class="global-logo">AF</span>
+            <div>
+                <h1 class="global-title">Academia de Fútbol</h1>
+                <p class="global-subtitle">Sistema de Matrícula en Línea</p>
+            </div>
+        </div>
     </header>
 
-    <!-- Indicador de pasos -->
-    <nav class="pasos" aria-label="Progreso del formulario">
-        <span class="paso activo" id="indicador-1">1. Datos</span>
-        <span class="separador">—</span>
-        <span class="paso" id="indicador-2">2. Categoría y Pago</span>
-        <span class="separador">—</span>
-        <span class="paso" id="indicador-3">3. Confirmación</span>
-    </nav>
+    <div class="flow-hint">
+        Flujo de pantallas: Datos del Alumno &gt; Categoría y Pago &gt; Confirmación
+    </div>
 
-    <!-- PASO 1: Datos del alumno -->
-    <section id="paso-1" class="seccion-formulario">
-        <h2>Paso 1 — Datos del Alumno</h2>
-
-        <div class="campo">
-            <label for="nombre">Nombre completo *</label>
-            <input type="text" id="nombre" name="nombre"
-                   placeholder="ej. Juan Pérez Ríos" required>
-            <span class="error" id="error-nombre"></span>
-        </div>
-
-        <div class="campo">
-            <label for="fechaNacimiento">Fecha de nacimiento *</label>
-            <input type="date" id="fechaNacimiento" name="fechaNacimiento" required>
-            <span class="error" id="error-fecha"></span>
-        </div>
-
-        <div class="campo">
-            <label for="dni">DNI / Documento *</label>
-            <input type="text" id="dni" name="dni"
-                   placeholder="12345678" maxlength="8" required>
-            <span class="error" id="error-dni"></span>
-        </div>
-
-        <div class="campo">
-            <label for="correoTutor">Correo del tutor *</label>
-            <input type="email" id="correoTutor" name="correoTutor"
-                   placeholder="correo@ejemplo.com" required>
-            <span class="error" id="error-correo"></span>
-        </div>
-
-        <div class="acciones">
-            <button type="button" id="btn-siguiente-1">Siguiente</button>
-        </div>
-    </section>
-
-    <!-- PASO 2: Categoría y pago -->
-    <section id="paso-2" class="seccion-formulario oculto">
-        <h2>Paso 2 — Categoría y Pago</h2>
-
-        <div class="campo">
-            <label for="categoria">Categoría *</label>
-            <select id="categoria" name="categoria" required>
-                <option value="">Seleccione una categoría...</option>
-            </select>
-            <span class="error" id="error-categoria"></span>
-        </div>
-
-        <div class="campo">
-            <label>Monto de matrícula</label>
-            <p class="monto-display" id="montoDisplay">S/ —</p>
-        </div>
-
-        <div class="campo">
-            <label>Método de pago *</label>
-            <div class="opciones-pago">
-                <label class="opcion-radio">
-                    <input type="radio" name="metodoPago" value="TARJETA">
-                    Tarjeta de crédito / débito
-                </label>
-                <label class="opcion-radio">
-                    <input type="radio" name="metodoPago" value="TRANSFERENCIA">
-                    Transferencia bancaria
-                </label>
+    <!-- Barra de progreso -->
+    <div class="progreso-bar">
+        <div class="progreso-inner">
+            <div class="step activo" id="step-1">
+                <div class="step-circle">1</div>
+                <span class="step-label">Datos del Alumno</span>
             </div>
-            <span class="error" id="error-metodo"></span>
-        </div>
-
-        <div class="campo" id="campo-tarjeta" style="display:none;">
-            <label for="numeroTarjeta">Número de tarjeta *</label>
-            <input type="text" id="numeroTarjeta" name="numeroTarjeta"
-                   placeholder="**** **** **** 1234" maxlength="19">
-            <span class="error" id="error-tarjeta"></span>
-        </div>
-
-        <div class="acciones">
-            <button type="button" id="btn-atras-2">Atrás</button>
-            <button type="button" id="btn-pagar">Pagar</button>
-        </div>
-    </section>
-
-    <!-- PASO 3: Confirmación -->
-    <section id="paso-3" class="seccion-formulario oculto">
-        <h2>Paso 3 — Confirmación</h2>
-        <div class="confirmacion">
-            <p class="titulo-exito">Matrícula registrada con éxito</p>
-            <p>La constancia ha sido enviada al correo del tutor registrado.</p>
-            <p id="referenciaConfirmacion" class="referencia"></p>
-            <div class="acciones">
-                <button type="button" id="btn-descargar">Descargar Constancia PDF</button>
-                <button type="button" id="btn-reiniciar">Volver al inicio</button>
+            <div class="step-line" id="line-1"></div>
+            <div class="step" id="step-2">
+                <div class="step-circle">2</div>
+                <span class="step-label">Categoría y Pago</span>
+            </div>
+            <div class="step-line" id="line-2"></div>
+            <div class="step" id="step-3">
+                <div class="step-circle">3</div>
+                <span class="step-label">Confirmación</span>
             </div>
         </div>
-    </section>
+    </div>
 
-</main>
+    <main class="main-content">
+
+        <!-- ══════════ PASO 1 ══════════ -->
+        <div class="panel" id="paso-1">
+            <div class="panel-header">
+                <span class="panel-title">Paso 1 · Datos del Alumno</span>
+            </div>
+            <div class="panel-body">
+
+                <div class="campo">
+                    <label for="nombre">Nombre completo <span class="req">*</span></label>
+                    <input type="text" id="nombre" placeholder="ej. Juan Pérez Ríos" autocomplete="name">
+                    <span class="error" id="error-nombre"></span>
+                </div>
+
+                <div class="campo">
+                    <label for="fechaNacimiento">Fecha de nacimiento <span class="req">*</span></label>
+                    <input type="date" id="fechaNacimiento">
+                    <span class="error" id="error-fecha"></span>
+                </div>
+
+                <div class="campo">
+                    <label for="dni">DNI / Documento <span class="req">*</span></label>
+                    <input type="text" id="dni" placeholder="12345678" maxlength="8" autocomplete="off">
+                    <span class="error" id="error-dni"></span>
+                </div>
+
+                <div class="campo">
+                    <label for="correoTutor">Correo del tutor <span class="req">*</span></label>
+                    <input type="email" id="correoTutor" placeholder="correo@ejemplo.com" autocomplete="email">
+                    <span class="error" id="error-correo"></span>
+                </div>
+
+                <div class="panel-actions">
+                    <button type="button" class="btn-siguiente" id="btn-siguiente-1">
+                        Siguiente
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ══════════ PASO 2 ══════════ -->
+        <div class="panel oculto" id="paso-2">
+            <div class="panel-header">
+                <span class="panel-title">Paso 2 · Categoría y Pago</span>
+            </div>
+            <div class="panel-body">
+
+                <div class="campo">
+                    <label for="categoria">Categoría <span class="req">*</span></label>
+                    <select id="categoria">
+                        <option value="">Infantil / Junior / Sub-17</option>
+                    </select>
+                    <span class="error" id="error-categoria"></span>
+                </div>
+
+                <div class="campo">
+                    <label>Monto de matrícula</label>
+                    <div class="monto-display" id="montoDisplay">S/ —</div>
+                </div>
+
+                <div class="campo">
+                    <label>Método de pago <span class="req">*</span></label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="metodoPago" value="TARJETA" id="radio-tarjeta">
+                            <span class="radio-custom"></span>
+                            Tarjeta de crédito / débito
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="metodoPago" value="TRANSFERENCIA" id="radio-transferencia">
+                            <span class="radio-custom"></span>
+                            Transferencia bancaria
+                        </label>
+                    </div>
+                    <span class="error" id="error-metodo"></span>
+                </div>
+
+                <div class="campo" id="campo-tarjeta" style="display:none">
+                    <label for="numeroTarjeta">Número de tarjeta <span class="req">*</span></label>
+                    <input type="text" id="numeroTarjeta" placeholder="**** **** **** 1234" maxlength="19">
+                    <span class="error" id="error-tarjeta"></span>
+                </div>
+
+                <div class="panel-actions two">
+                    <button type="button" class="btn-atras" id="btn-atras-2">Atrás</button>
+                    <button type="button" class="btn-pagar" id="btn-pagar">
+                        <span id="pagar-label">Pagar S/ —</span>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ══════════ PASO 3 ══════════ -->
+        <div class="panel oculto" id="paso-3">
+            <div class="panel-header">
+                <span class="panel-title">Paso 3 · Confirmación</span>
+            </div>
+            <div class="panel-body confirmacion-body">
+
+                <div class="check-circle">
+                    <svg viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="26" cy="26" r="25" stroke="#2f6d2f" stroke-width="2" fill="#e7f3e7"/>
+                        <path d="M14 27L22 35L38 19" stroke="#2f6d2f" stroke-width="3.5"
+                              stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+
+                <h2 class="exito-titulo">¡Matrícula registrada con éxito!</h2>
+                <p class="exito-desc">Constancia enviada al correo del tutor.</p>
+                <p class="exito-ref" id="referenciaConfirmacion"></p>
+
+                <div class="panel-actions col">
+                    <button type="button" class="btn-descargar" id="btn-descargar">
+                        Descargar Constancia
+                    </button>
+                    <button type="button" class="btn-atras" id="btn-reiniciar">
+                        Nueva matrícula
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
 
 <script src="js/api.js"></script>
 <script src="js/validacion.js"></script>

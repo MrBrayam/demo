@@ -18,10 +18,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Actualizar monto al elegir categoría
-    document.getElementById('categoria').addEventListener('change', function () {
-        const cat = categorias.find(c => c.id == this.value);
-        document.getElementById('montoDisplay').textContent = cat ? `S/ ${cat.montoMatricula}` : 'S/ —';
-    });
+    document.getElementById('categoria').addEventListener('change', actualizarMontoYBoton);
 
     // Mostrar campo tarjeta según método
     document.querySelectorAll('input[name="metodoPago"]').forEach(radio => {
@@ -48,8 +45,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!validarPaso2()) return;
 
         const boton = document.getElementById('btn-pagar');
+        const pagarLabel = document.getElementById('pagar-label');
         boton.disabled = true;
-        boton.textContent = 'Procesando...';
+        pagarLabel.textContent = 'Procesando...';
 
         const datos = {
             nombreCompleto: document.getElementById('nombre').value.trim(),
@@ -70,7 +68,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         } catch (error) {
             alert(error.message);
             boton.disabled = false;
-            boton.textContent = 'Pagar';
+            actualizarMontoYBoton();
         }
     });
 
@@ -87,12 +85,29 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('btn-reiniciar').addEventListener('click', () => {
         location.reload();
     });
+    actualizarMontoYBoton();
 });
+
+function actualizarMontoYBoton() {
+    const select = document.getElementById('categoria');
+    const cat = categorias.find(c => c.id == select.value);
+    const montoTexto = cat ? `S/ ${cat.montoMatricula}` : 'S/ —';
+    document.getElementById('montoDisplay').textContent = montoTexto;
+    document.getElementById('pagar-label').textContent = cat ? `Pagar ${montoTexto}` : 'Pagar S/ —';
+}
 
 function mostrarPaso(numero) {
     [1, 2, 3].forEach(n => {
         document.getElementById(`paso-${n}`).classList.toggle('oculto', n !== numero);
-        const indicador = document.getElementById(`indicador-${n}`);
-        indicador.classList.toggle('activo', n === numero);
+        const step = document.getElementById(`step-${n}`);
+        if (step) {
+            step.classList.toggle('activo', n === numero);
+            step.classList.toggle('completo', n < numero);
+        }
     });
+
+    const line1 = document.getElementById('line-1');
+    const line2 = document.getElementById('line-2');
+    if (line1) line1.classList.toggle('activo', numero > 1);
+    if (line2) line2.classList.toggle('activo', numero > 2);
 }
