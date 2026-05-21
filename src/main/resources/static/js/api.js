@@ -145,6 +145,24 @@ async function actualizarEstadoAdmin(credenciales, id, estado) {
     return response.json();
 }
 
+async function crearMatriculaAdmin(credenciales, datos) {
+    const response = await fetch(`${API_BASE}/admin/matriculas`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Admin-User': credenciales.username,
+            'X-Admin-Pass': credenciales.password
+        },
+        body: JSON.stringify(datos)
+    });
+
+    if (!response.ok) {
+        const mensaje = await response.text();
+        throw new Error(mensaje || 'No se pudo crear la matricula.');
+    }
+    return response.json();
+}
+
 async function actualizarCategoriaAdmin(credenciales, id, categoriaId) {
     const response = await fetch(`${API_BASE}/admin/matriculas/${id}/categoria`, {
         method: 'PUT',

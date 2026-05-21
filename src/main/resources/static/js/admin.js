@@ -19,6 +19,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // Matriculas
     document.getElementById('admin-recargar')?.addEventListener('click', cargarMatriculasAdmin);
     document.getElementById('admin-estado')?.addEventListener('change', cargarMatriculasAdmin);
+    
+    document.getElementById('btn-nueva-matricula')?.addEventListener('click', () => {
+        document.getElementById('form-matricula').reset();
+        document.getElementById('form-matricula-card').classList.remove('oculto');
+    });
+    document.getElementById('btn-cancelar-matricula')?.addEventListener('click', () => {
+        document.getElementById('form-matricula-card').classList.add('oculto');
+    });
+    document.getElementById('form-matricula')?.addEventListener('submit', guardarMatriculaAdmin);
+    
     document.getElementById('admin-body')?.addEventListener('click', async (event) => {
         const btnAnular = event.target.closest('.btn-anular');
         if (btnAnular) {
@@ -167,6 +177,26 @@ async function cargarMatriculasAdmin() {
         }).join('');
     } catch (error) {
         tbody.innerHTML = '<tr><td colspan="6" class="tabla-cargando">Error al cargar matriculas.</td></tr>';
+    }
+}
+
+async function guardarMatriculaAdmin(e) {
+    e.preventDefault();
+    if (!credencialesAdmin) return;
+    const errorEl = document.getElementById('matricula-error');
+    errorEl.textContent = '';
+    
+    const datos = {
+        alumnoDni: document.getElementById('matricula-dni').value,
+        categoriaId: Number(document.getElementById('matricula-categoria').value)
+    };
+    
+    try {
+        await crearMatriculaAdmin(credencialesAdmin, datos);
+        document.getElementById('form-matricula-card').classList.add('oculto');
+        await cargarMatriculasAdmin();
+    } catch (err) {
+        errorEl.textContent = err.message;
     }
 }
 
@@ -446,7 +476,7 @@ async function cargarCategoriasAdmin() {
                 <td>${c.nombre}</td>
                 <td>${c.edadMinima} - ${c.edadMaxima} años</td>
                 <td>${c.cuposDisponibles}</td>
-                <td>S/ ${c.monto.toFixed(2)}</td>
+                <td>S/ ${c.montoMatricula ? c.montoMatricula.toFixed(2) : '0.00'}</td>
                 <td>${c.activo ? '<span style="color:green;font-weight:bold;">Activa</span>' : '<span style="color:red;">Inactiva</span>'}</td>
                 <td>
                     <button class="btn-accion btn-editar-categoria" data-id="${c.id}">Editar</button>
@@ -466,7 +496,7 @@ async function guardarCategoria(e) {
     const id = document.getElementById('categoria-id').value;
     const datos = {
         nombre: document.getElementById('categoria-nombre').value,
-        monto: parseFloat(document.getElementById('categoria-monto').value),
+        montoMatricula: parseFloat(document.getElementById('categoria-monto').value),
         edadMinima: parseInt(document.getElementById('categoria-edadmin').value),
         edadMaxima: parseInt(document.getElementById('categoria-edadmax').value),
         cuposDisponibles: parseInt(document.getElementById('categoria-cupos').value),
@@ -487,7 +517,7 @@ function editarCategoria(idStr) {
     if (!cat) return;
     document.getElementById('categoria-id').value = cat.id;
     document.getElementById('categoria-nombre').value = cat.nombre;
-    document.getElementById('categoria-monto').value = cat.monto;
+    document.getElementById('categoria-monto').value = cat.montoMatricula;
     document.getElementById('categoria-edadmin').value = cat.edadMinima;
     document.getElementById('categoria-edadmax').value = cat.edadMaxima;
     document.getElementById('categoria-cupos').value = cat.cuposDisponibles;
