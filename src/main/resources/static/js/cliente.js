@@ -1,8 +1,9 @@
-let categorias = [];
-let matriculaIdConfirmada = null;
 let credencialesCliente = null;
+let matriculasCliente = [];
+let matriculaSeleccionada = null;
 
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Login Handling
     const formLogin = document.getElementById('form-cliente-login');
     if (formLogin) {
         formLogin.addEventListener('submit', async (event) => {
@@ -11,6 +12,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
+    // 2. Sidebar Navigation
     document.querySelectorAll('.cliente-nav').forEach(button => {
         button.addEventListener('click', () => {
             const view = button.getAttribute('data-view');
@@ -18,138 +20,90 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     });
 
-    try {
-        categorias = await obtenerCategorias();
-        const select = document.getElementById('categoria');
-        categorias.forEach(cat => {
-            const option = document.createElement('option');
-            option.value = cat.id;
-            option.textContent = `${cat.nombre} / Edad ${cat.edadMinima}-${cat.edadMaxima}`;
-            select.appendChild(option);
+    // 3. Card Form Inputs Formatting
+    const inputNumero = document.getElementById('tarjeta-numero');
+    const inputVencimiento = document.getElementById('tarjeta-vencimiento');
+    const inputCVV = document.getElementById('tarjeta-cvv');
+
+    if (inputNumero) {
+        inputNumero.addEventListener('input', (e) => {
+            let val = e.target.value.replace(/\s+/g, '');
+            if (val !== 'tok_reject_test') {
+                val = val.replace(/\D/g, '');
+                let formatted = '';
+                for (let i = 0; i < val.length; i++) {
+                    if (i > 0 && i % 4 === 0) {
+                        formatted += ' ';
+                    }
+                    formatted += val[i];
+                }
+                e.target.value = formatted;
+            }
         });
-    } catch (error) {
-        alert('Error al cargar categorias: ' + error.message);
     }
 
-    document.getElementById('categoria').addEventListener('change', actualizarMontoYBoton);
-
-    document.querySelectorAll('input[name="metodoPago"]').forEach(radio => {
-        radio.addEventListener('change', function () {
-            const campoTarjeta = document.getElementById('campo-tarjeta');
-            campoTarjeta.style.display = this.value === 'TARJETA' ? 'block' : 'none';
-        });
-    });
-
-    document.getElementById('btn-siguiente-1').addEventListener('click', async () => {
-        if (validarPaso1()) {
-            const btnSiguiente = document.getElementById('btn-siguiente-1');
-            const textoOriginal = btnSiguiente.textContent;
-            btnSiguiente.textContent = 'Verificando...';
-            btnSiguiente.disabled = true;
-
-            const datosPaso1 = {
-                nombreCompleto: document.getElementById('nombre').value.trim(),
-                fechaNacimiento: document.getElementById('fechaNacimiento').value,
-                dni: document.getElementById('dni').value.trim(),
-                correoTutor: document.getElementById('correoTutor').value.trim(),
-                contrasena: document.getElementById('contrasena').value.trim(),
-                categoriaId: parseInt(document.getElementById('categoria').value),
-                metodoPago: 'TARJETA'
-            };
-
-            try {
-                await verificarAlumno(datosPaso1);
-                document.getElementById('paso-2').classList.remove('disabled-panel');
-                document.getElementById('arrow-1').classList.add('active');
-                document.getElementById('btn-pagar').disabled = false;
-            } catch (error) {
-                alert(error.message);
-            } finally {
-                btnSiguiente.textContent = textoOriginal;
-                btnSiguiente.disabled = false;
+    if (inputVencimiento) {
+        inputVencimiento.addEventListener('input', (e) => {
+            let val = e.target.value.replace(/\D/g, '');
+            if (val.length > 2) {
+                e.target.value = val.substring(0, 2) + '/' + val.substring(2, 4);
+            } else {
+                e.target.value = val;
             }
-        }
-    });
+        });
+    }
 
-    document.getElementById('btn-pagar').addEventListener('click', async () => {
-        if (!validarPaso2()) return;
+    if (inputCVV) {
+        inputCVV.addEventListener('input', (e) => {
+            e.target.value = e.target.value.replace(/\D/g, '');
+        });
+    }
 
-        const boton = document.getElementById('btn-pagar');
-        boton.disabled = true;
-        document.getElementById('pagar-label').textContent = 'Procesando...';
+    // 4. Payment Submission
+    const formPago = document.getElementById('form-pago-tarjeta');
+    if (formPago) {
+        formPago.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            await procesarPagoPendiente();
+        });
+    }
 
-        const datos = {
-            nombreCompleto: document.getElementById('nombre').value.trim(),
-            fechaNacimiento: document.getElementById('fechaNacimiento').value,
-            dni: document.getElementById('dni').value.trim(),
-            correoTutor: document.getElementById('correoTutor').value.trim(),
-            contrasena: document.getElementById('contrasena').value.trim(),
-            categoriaId: parseInt(document.getElementById('categoria').value),
-            metodoPago: document.querySelector('input[name="metodoPago"]:checked').value,
-            tokenPago: 'tok_test_simulado'
-        };
+    // 5. Table Clicks (Selecting pending payments and history shortcuts)
+    const pendientesBody = document.getElementById('pendientes-body');
+    if (pendientesBody) {
+        pendientesBody.addEventListener('click', (event) => {
+            const btnPagar = event.target.closest('.btn-seleccionar-pago');
+            if (btnPagar) {
+                const id = Number(btnPagar.getAttribute('data-id'));
+                seleccionarMatricula(id);
+            }
+        });
+    }
 
-        try {
-            const respuesta = await registrarMatricula(datos);
-            matriculaIdConfirmada = respuesta.matriculaId;
-            document.getElementById('referenciaConfirmacion').textContent = 'Ref: ' + respuesta.referenciaPago;
+    const historialBody = document.getElementById('historial-body');
+    if (historialBody) {
+        historialBody.addEventListener('click', async (event) => {
+            const btnPagar = event.target.closest('.btn-pagar-historial');
+            if (btnPagar) {
+                const id = Number(btnPagar.getAttribute('data-id'));
+                cambiarVista('pagos');
+                seleccionarMatricula(id);
+                return;
+            }
 
-            document.getElementById('paso-3').classList.remove('disabled-panel');
-            document.getElementById('arrow-2').classList.add('active');
-            document.getElementById('btn-descargar').style.display = 'inline-flex';
-            document.getElementById('placeholder-btn-descargar').style.display = 'none';
-
-            document.getElementById('pagar-label').textContent = 'Pagado';
-            await cargarHistorialCliente();
-        } catch (error) {
-            alert(error.message);
-            boton.disabled = false;
-            actualizarMontoYBoton();
-        }
-    });
-
-    document.getElementById('btn-descargar').addEventListener('click', async () => {
-        try {
-            await descargarConstancia(matriculaIdConfirmada);
-        } catch (error) {
-            alert(error.message);
-        }
-    });
-
-    document.getElementById('historial-body').addEventListener('click', async (event) => {
-        const btnPagar = event.target.closest('.btn-pagar-historial');
-        if (!btnPagar) return;
-
-        if (!credencialesCliente) {
-            alert('Inicia sesion para continuar.');
-            return;
-        }
-
-        const id = Number(btnPagar.getAttribute('data-id'));
-        if (!id) return;
-
-        const token = prompt('Token de pago', 'tok_test_simulado');
-        if (!token) return;
-
-        try {
-            await pagarMatriculaCliente(credencialesCliente, id, token);
-            await cargarHistorialCliente();
-        } catch (error) {
-            alert(error.message);
-        }
-    });
-
-    actualizarMontoYBoton();
+            const btnTxt = event.target.closest('.btn-generar-txt');
+            if (btnTxt) {
+                const id = Number(btnTxt.getAttribute('data-id'));
+                const item = matriculasCliente.find(m => m.id === id);
+                if (item) {
+                    descargarReciboTxt(item);
+                }
+            }
+        });
+    }
 });
 
-function actualizarMontoYBoton() {
-    const select = document.getElementById('categoria');
-    const cat = categorias.find(c => c.id == select.value);
-    const montoTexto = cat ? `S/ ${cat.montoMatricula}` : 'S/ 150.00';
-    document.getElementById('montoDisplay').textContent = montoTexto;
-    document.getElementById('pagar-label').textContent = cat ? `Pagar ${montoTexto}` : 'Pagar S/ 150.00';
-}
-
+// LOGIN LOGIC
 async function manejarLoginCliente() {
     const dni = document.getElementById('login-dni').value.trim();
     const contrasena = document.getElementById('login-pass').value;
@@ -157,6 +111,11 @@ async function manejarLoginCliente() {
     const btnLogin = document.getElementById('btn-login');
 
     if (errorEl) errorEl.textContent = '';
+    if (!dni || !contrasena) {
+        if (errorEl) errorEl.textContent = 'Ingrese su DNI y contraseña.';
+        return;
+    }
+
     if (btnLogin) {
         btnLogin.disabled = true;
         btnLogin.textContent = 'Ingresando...';
@@ -167,15 +126,16 @@ async function manejarLoginCliente() {
         if (respuesta && respuesta.success) {
             credencialesCliente = { dni, contrasena, nombre: respuesta.nombre };
             mostrarAppCliente();
+            await cargarDatosCliente();
             return;
         }
 
         if (errorEl) {
-            errorEl.textContent = respuesta?.mensaje || 'Credenciales invalidas';
+            errorEl.textContent = respuesta?.mensaje || 'Credenciales inválidas';
         }
     } catch (error) {
         if (errorEl) {
-            errorEl.textContent = 'Error de conexion con el servidor';
+            errorEl.textContent = 'Error de conexión con el servidor';
         }
     } finally {
         if (btnLogin) {
@@ -189,14 +149,16 @@ function mostrarAppCliente() {
     const loginPanel = document.getElementById('cliente-login');
     const appPanel = document.getElementById('cliente-app');
     const userLabel = document.getElementById('cliente-user');
+
     if (loginPanel) loginPanel.classList.add('oculto');
     if (appPanel) appPanel.classList.remove('oculto');
     if (userLabel && credencialesCliente) {
-        userLabel.textContent = `Cliente ${credencialesCliente.dni}`;
+        userLabel.textContent = `${credencialesCliente.nombre || 'Cliente'}\nDNI: ${credencialesCliente.dni}`;
     }
     cambiarVista('pagos');
 }
 
+// NAVIGATION
 function cambiarVista(view) {
     const pagos = document.getElementById('cliente-pagos');
     const historial = document.getElementById('cliente-historial');
@@ -208,59 +170,281 @@ function cambiarVista(view) {
 
     if (pagos) pagos.classList.toggle('oculto', view !== 'pagos');
     if (historial) historial.classList.toggle('oculto', view !== 'historial');
+}
 
-    if (view === 'historial') {
-        cargarHistorialCliente();
+// DATA LOADING
+async function cargarDatosCliente() {
+    if (!credencialesCliente) return;
+
+    try {
+        matriculasCliente = await obtenerHistorialCliente(credencialesCliente);
+        renderPendientes();
+        renderHistorial();
+    } catch (error) {
+        console.error('Error al cargar datos del cliente:', error);
     }
 }
 
-async function cargarHistorialCliente() {
-    const tbody = document.getElementById('historial-body');
+function renderPendientes() {
+    const tbody = document.getElementById('pendientes-body');
     if (!tbody) return;
 
-    if (!credencialesCliente) {
-        tbody.innerHTML = '<tr><td colspan="6" class="tabla-cargando">Inicia sesion para ver tu historial.</td></tr>';
+    const pendientes = matriculasCliente.filter(m => m.estado === 'PENDIENTE' || m.estado === 'RECHAZADA');
+
+    if (pendientes.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="tabla-cargando">No tienes pagos pendientes. ¡Al día!</td></tr>';
         return;
     }
 
-    tbody.innerHTML = '<tr><td colspan="6" class="tabla-cargando">Cargando...</td></tr>';
+    tbody.innerHTML = pendientes.map(item => {
+        const fecha = formatearFecha(item.fechaRegistro);
+        const monto = item.montoMatricula != null ? `S/ ${Number(item.montoMatricula).toFixed(2)}` : 'S/ -';
+        const estadoClase = obtenerClaseEstado(item.estado);
 
-    try {
-        const items = await obtenerHistorialCliente(credencialesCliente);
-        if (!items.length) {
-            tbody.innerHTML = '<tr><td colspan="6" class="tabla-cargando">No hay matriculas registradas.</td></tr>';
-            return;
+        return `
+            <tr>
+                <td>${fecha}</td>
+                <td>${item.categoria || 'N/A'}</td>
+                <td>${monto}</td>
+                <td><span class="estado-badge ${estadoClase}">${item.estado || 'N/A'}</span></td>
+                <td>
+                    <button class="btn-accion btn-seleccionar-pago" data-id="${item.id}">
+                        Pagar
+                    </button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+function renderHistorial() {
+    const tbody = document.getElementById('historial-body');
+    if (!tbody) return;
+
+    if (matriculasCliente.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="tabla-cargando">No hay matrículas registradas.</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = matriculasCliente.map(item => {
+        const fecha = formatearFecha(item.fechaRegistro);
+        const monto = item.montoMatricula != null ? `S/ ${Number(item.montoMatricula).toFixed(2)}` : 'S/ -';
+        const estadoClase = obtenerClaseEstado(item.estado);
+        const referencia = item.referenciaPago || 'N/A';
+
+        let accionHtml = '';
+        if (item.estado === 'CONFIRMADA') {
+            accionHtml = `
+                <button class="btn-accion btn-generar-txt" data-id="${item.id}">
+                    Recibo .txt
+                </button>
+            `;
+        } else if (item.estado === 'PENDIENTE' || item.estado === 'RECHAZADA') {
+            accionHtml = `
+                <button class="btn-accion btn-pagar-historial" data-id="${item.id}">
+                    Pagar
+                </button>
+            `;
+        } else {
+            accionHtml = '-';
         }
 
-        tbody.innerHTML = items.map(item => {
-            const fecha = formatearFecha(item.fechaRegistro);
-            const monto = item.montoMatricula != null
-                ? `S/ ${Number(item.montoMatricula).toFixed(2)}`
-                : 'S/ -';
-            const estadoClase = obtenerClaseEstado(item.estado);
-            const referencia = item.referenciaPago || 'N/A';
-            const puedePagar = item.estado === 'PENDIENTE' || item.estado === 'RECHAZADA';
+        return `
+            <tr>
+                <td>${fecha}</td>
+                <td>${item.categoria || 'N/A'}</td>
+                <td>${monto}</td>
+                <td><span class="estado-badge ${estadoClase}">${item.estado || 'N/A'}</span></td>
+                <td>${referencia}</td>
+                <td>${accionHtml}</td>
+            </tr>
+        `;
+    }).join('');
+}
 
-            return `
-                <tr>
-                    <td>${fecha}</td>
-                    <td>${item.categoria || 'N/A'}</td>
-                    <td>${monto}</td>
-                    <td><span class="estado-badge ${estadoClase}">${item.estado || 'N/A'}</span></td>
-                    <td>${referencia}</td>
-                    <td>
-                        <button class="btn-accion btn-pagar-historial" data-id="${item.id}" ${puedePagar ? '' : 'disabled'}>
-                            Pagar
-                        </button>
-                    </td>
-                </tr>
-            `;
-        }).join('');
+// SELECTION
+function seleccionarMatricula(id) {
+    const item = matriculasCliente.find(m => m.id === id);
+    if (!item) return;
+
+    matriculaSeleccionada = item;
+
+    document.getElementById('pago-id').textContent = item.id;
+    document.getElementById('pago-categoria').textContent = item.categoria || 'N/A';
+    document.getElementById('pago-monto').textContent = item.montoMatricula != null ? `S/ ${Number(item.montoMatricula).toFixed(2)}` : 'S/ -';
+    document.getElementById('pago-estado').textContent = item.estado || 'N/A';
+    document.getElementById('pago-fecha').textContent = formatearFecha(item.fechaRegistro);
+
+    // Habilitar campos
+    document.getElementById('tarjeta-numero').disabled = false;
+    document.getElementById('tarjeta-vencimiento').disabled = false;
+    document.getElementById('tarjeta-cvv').disabled = false;
+    document.getElementById('btn-pagar-pendiente').disabled = false;
+
+    // Limpiar errores previos y mensajes
+    limpiarErroresTarjeta();
+}
+
+function deseleccionarMatricula() {
+    matriculaSeleccionada = null;
+
+    document.getElementById('pago-id').textContent = '-';
+    document.getElementById('pago-categoria').textContent = '-';
+    document.getElementById('pago-monto').textContent = '-';
+    document.getElementById('pago-estado').textContent = '-';
+    document.getElementById('pago-fecha').textContent = '-';
+
+    // Deshabilitar y limpiar campos
+    const inputNumero = document.getElementById('tarjeta-numero');
+    const inputVencimiento = document.getElementById('tarjeta-vencimiento');
+    const inputCVV = document.getElementById('tarjeta-cvv');
+
+    inputNumero.value = '';
+    inputVencimiento.value = '';
+    inputCVV.value = '';
+
+    inputNumero.disabled = true;
+    inputVencimiento.disabled = true;
+    inputCVV.disabled = true;
+    document.getElementById('btn-pagar-pendiente').disabled = true;
+
+    limpiarErroresTarjeta();
+}
+
+function limpiarErroresTarjeta() {
+    document.getElementById('error-tarjeta-numero').textContent = '';
+    document.getElementById('error-tarjeta-vencimiento').textContent = '';
+    document.getElementById('error-tarjeta-cvv').textContent = '';
+    document.getElementById('pago-mensaje').textContent = '';
+    document.getElementById('pago-mensaje').className = 'pago-mensaje';
+}
+
+// VALIDATION
+function validarTarjeta() {
+    let valido = true;
+    limpiarErroresTarjeta();
+
+    const numero = document.getElementById('tarjeta-numero').value.trim();
+    const vencimiento = document.getElementById('tarjeta-vencimiento').value.trim();
+    const cvv = document.getElementById('tarjeta-cvv').value.trim();
+
+    if (numero === 'tok_reject_test') {
+        // Permitir simulación directa de rechazo
+    } else {
+        const digitos = numero.replace(/\s+/g, '');
+        if (!/^\d{13,16}$/.test(digitos)) {
+            document.getElementById('error-tarjeta-numero').textContent = 'El número de tarjeta debe tener entre 13 y 16 dígitos.';
+            valido = false;
+        }
+    }
+
+    if (!/^\d{2}\/\d{2}$/.test(vencimiento)) {
+        document.getElementById('error-tarjeta-vencimiento').textContent = 'Formato inválido. Use MM/AA.';
+        valido = false;
+    } else {
+        const partes = vencimiento.split('/');
+        const mes = Number(partes[0]);
+        if (mes < 1 || mes > 12) {
+            document.getElementById('error-tarjeta-vencimiento').textContent = 'Mes inválido (1-12).';
+            valido = false;
+        }
+    }
+
+    if (!/^\d{3,4}$/.test(cvv)) {
+        document.getElementById('error-tarjeta-cvv').textContent = 'El CVV debe tener 3 o 4 dígitos.';
+        valido = false;
+    }
+
+    return valido;
+}
+
+// PROCESSING PAYMENT
+async function procesarPagoPendiente() {
+    if (!matriculaSeleccionada || !credencialesCliente) return;
+
+    if (!validarTarjeta()) return;
+
+    const btnPagar = document.getElementById('btn-pagar-pendiente');
+    const mensajeEl = document.getElementById('pago-mensaje');
+
+    const textoOriginal = btnPagar.textContent;
+    btnPagar.disabled = true;
+    btnPagar.textContent = 'Procesando...';
+
+    const numeroTarjetaVal = document.getElementById('tarjeta-numero').value.trim();
+    const tokenPago = (numeroTarjetaVal === 'tok_reject_test') ? 'tok_reject_test' : 'tok_test_simulado';
+
+    try {
+        const resultado = await pagarMatriculaCliente(credencialesCliente, matriculaSeleccionada.id, tokenPago);
+
+        mensajeEl.textContent = '¡Pago procesado con éxito!';
+        mensajeEl.className = 'pago-mensaje exito'; // Usar estilo verde/exito si existe
+
+        // Descargar recibo .txt
+        // Obtenemos los datos actualizados combinados con los locales
+        const itemExitoso = {
+            id: matriculaSeleccionada.id,
+            alumno: credencialesCliente.nombre,
+            categoria: matriculaSeleccionada.categoria,
+            montoMatricula: matriculaSeleccionada.montoMatricula,
+            estado: 'CONFIRMADA',
+            fechaRegistro: matriculaSeleccionada.fechaRegistro,
+            referenciaPago: resultado.referenciaPago || resultado.referencia || 'REF-N/A'
+        };
+
+        descargarReciboTxt(itemExitoso);
+
+        // Recargar datos y deseleccionar
+        await cargarDatosCliente();
+        deseleccionarMatricula();
+
     } catch (error) {
-        tbody.innerHTML = '<tr><td colspan="6" class="tabla-cargando">Error al cargar historial.</td></tr>';
+        mensajeEl.textContent = error.message || 'Error al procesar el pago.';
+        mensajeEl.className = 'pago-mensaje error'; // Estilo rojo
+
+        // Recargar para actualizar estado a RECHAZADA en la tabla si es necesario
+        await cargarDatosCliente();
+    } finally {
+        btnPagar.disabled = false;
+        btnPagar.textContent = 'Procesar pago';
     }
 }
 
+// TXT GENERATION
+function descargarReciboTxt(item) {
+    const fecha = formatearFecha(item.fechaRegistro);
+    const monto = item.montoMatricula != null ? `S/ ${Number(item.montoMatricula).toFixed(2)}` : 'S/ -';
+    const referencia = item.referenciaPago || 'N/A';
+
+    const contenido = `=========================================
+      ACADEMIA DE FÚTBOL "LOS CRACKS"
+         COMPROBANTE DE PAGO EXITOSO
+=========================================
+Fecha de Pago:  ${formatearFecha(new Date())}
+Fecha Matrícula:${fecha}
+Matrícula ID:   ${item.id}
+Alumno:         ${item.alumno || 'N/A'}
+Categoría:      ${item.categoria || 'N/A'}
+Monto Pagado:   ${monto}
+Estado:         ${item.estado || 'CONFIRMADA'}
+Referencia:     ${referencia}
+=========================================
+     ¡Gracias por su pago y preferencia!
+=========================================
+`;
+
+    const blob = new Blob([contenido], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Recibo_Pago_Matricula_${item.id}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+// FORMATTING HELPERS
 function formatearFecha(fechaStr) {
     if (!fechaStr) return '-';
     const fecha = new Date(fechaStr);

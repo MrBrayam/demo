@@ -705,3 +705,25 @@ button:disabled {
         grid-template-columns: 1fr;
     }
 }
+
+.pago-mensaje {
+    margin-top: 15px;
+    padding: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+    display: none;
+}
+.pago-mensaje.exito {
+    display: block;
+    background: var(--green-light);
+    color: var(--green-dark);
+    border: 1px solid #cfe5cf;
+}
+.pago-mensaje.error {
+    display: block;
+    background: #f3d6d6;
+    color: #7a1c1c;
+    border: 1px solid #e6bcbc;
+}
+

@@ -3,37 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Portal del cliente para matriculas y pagos.">
-    <title>Cliente — Matriculas</title>
+    <meta name="description" content="Portal del cliente para matrículas y pagos.">
+    <title>Cliente — Portal de Matrículas</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
-    <div id="cliente-app" class="cliente-layout oculto">
+</head>
+<body>
+
+    <header class="global-header">
+        <div class="global-header-inner">
+            <span class="global-logo">AF</span>
+            <div>
+                <h1 class="global-title">Portal del Cliente</h1>
+            </div>
+        </div>
+    </header>
+
+    <!-- Login Panel -->
+    <section class="login-panel" id="cliente-login">
+        <div class="login-card">
+            <h2>Inicio de sesión</h2>
+            <p>Ingresa con tu DNI y contraseña.</p>
+            <form id="form-cliente-login" novalidate>
+                <div class="campo">
+                    <label for="login-dni">DNI</label>
+                    <input type="text" id="login-dni" placeholder="DNI" autocomplete="username" maxlength="8">
                 </div>
                 <div class="campo">
-                    <label for="login-pass">Contrasena</label>
-                    <input type="password" id="login-pass" placeholder="Contrasena" autocomplete="current-password">
+                    <label for="login-pass">Contraseña</label>
+                    <input type="password" id="login-pass" placeholder="Contraseña" autocomplete="current-password">
                 </div>
                 <p class="login-error" id="login-error"></p>
                 <button type="submit" class="btn-login" id="btn-login">Ingresar</button>
             </form>
+        </div>
+    </section>
+
+    <!-- Dashboard App Panel -->
+    <div id="cliente-app" class="cliente-layout oculto">
+        <!-- Sidebar Navigation -->
+        <aside class="cliente-sidebar">
+            <div class="cliente-user" id="cliente-user">Cliente DNI</div>
+            <button class="cliente-nav activo" data-view="pagos">Pagos pendientes</button>
+            <button class="cliente-nav" data-view="historial">Historial de matrículas</button>
+            <a href="cliente.html" class="btn-link" style="margin-top: auto; text-align: center;">Cerrar sesión</a>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="cliente-content">
+            
+            <!-- Pending Payments View -->
+            <section class="pagos-panel" id="cliente-pagos">
                 <div class="recent-header">
                     <h2>Pagos pendientes</h2>
-                    <p>Selecciona una matricula pendiente y completa el pago con tarjeta.</p>
+                    <p>Selecciona una matrícula pendiente y completa el pago con tu tarjeta.</p>
                 </div>
 
                 <div class="pago-grid">
+                    <!-- Left side: Pending list -->
                     <div class="pago-card">
                         <div class="recent-table-wrapper">
                             <table class="recent-table">
                                 <thead>
                                     <tr>
                                         <th>Fecha</th>
-                                        <th>Categoria</th>
+                                        <th>Categoría</th>
                                         <th>Monto</th>
                                         <th>Estado</th>
-                                        <th>Acciones</th>
+                                        <th>Acción</th>
                                     </tr>
                                 </thead>
                                 <tbody id="pendientes-body">
@@ -43,15 +82,16 @@
                         </div>
                     </div>
 
+                    <!-- Right side: Payment Gateway Form -->
                     <div class="pago-card">
                         <h3 class="pago-subtitulo">Detalle del pago</h3>
                         <div class="pago-resumen">
                             <div>
-                                <span>Matricula</span>
+                                <span>Matrícula ID</span>
                                 <strong id="pago-id">-</strong>
                             </div>
                             <div>
-                                <span>Categoria</span>
+                                <span>Categoría</span>
                                 <strong id="pago-categoria">-</strong>
                             </div>
                             <div>
@@ -68,22 +108,29 @@
                             </div>
                         </div>
 
-                        <form id="form-pago-tarjeta" novalidate>
+                        <form id="form-pago-tarjeta" style="margin-top: 15px;" novalidate>
                             <div class="campo">
-                                <label for="tarjeta-numero">Numero de tarjeta <span class="req">*</span></label>
-                                <input type="text" id="tarjeta-numero" placeholder="**** **** **** 1234" maxlength="19">
+                                <label for="tarjeta-numero">Número de tarjeta <span class="req">*</span></label>
+                                <input type="text" id="tarjeta-numero" placeholder="4000 0000 0000 0000" maxlength="19" disabled>
+                                <span class="error" id="error-tarjeta-numero"></span>
                             </div>
                             <div class="campo">
                                 <label for="tarjeta-vencimiento">Vencimiento <span class="req">*</span></label>
-                                <input type="text" id="tarjeta-vencimiento" placeholder="MM/AA" maxlength="5">
+                                <input type="text" id="tarjeta-vencimiento" placeholder="MM/AA" maxlength="5" disabled>
+                                <span class="error" id="error-tarjeta-vencimiento"></span>
                             </div>
                             <div class="campo">
                                 <label for="tarjeta-cvv">CVV <span class="req">*</span></label>
-                                <input type="text" id="tarjeta-cvv" placeholder="123" maxlength="4">
+                                <input type="text" id="tarjeta-cvv" placeholder="123" maxlength="4" disabled>
+                                <span class="error" id="error-tarjeta-cvv"></span>
                             </div>
 
+                            <p style="font-size: 11px; color: var(--gray-600); margin-bottom: 12px; font-style: italic;">
+                                * Para simular un pago fallido, ingrese <strong>tok_reject_test</strong> como número de tarjeta.
+                            </p>
+
                             <div class="panel-actions mt-auto">
-                                <button type="button" class="btn-pagar" id="btn-pagar-pendiente" disabled>
+                                <button type="submit" class="btn-pagar" id="btn-pagar-pendiente" disabled>
                                     Procesar pago
                                 </button>
                             </div>
@@ -92,47 +139,37 @@
                         <p class="pago-mensaje" id="pago-mensaje"></p>
                     </div>
                 </div>
-                                <button type="button" class="btn-descargar" id="btn-descargar" style="display:none">
-                                    Descargar constancia
-                                </button>
-                                <div class="placeholder-boton" id="placeholder-btn-descargar">
-                                    Descargar constancia
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-
-                </main>
             </section>
 
+            <!-- Complete Enrollment History View -->
             <section class="historial-panel oculto" id="cliente-historial">
                 <div class="recent-header">
-                    <p>Consulta y paga tus matriculas pendientes.</p>
+                    <h2>Historial de matrículas</h2>
+                    <p>Consulta el estado de todas tus matrículas y descarga los recibos.</p>
                 </div>
                 <div class="recent-table-wrapper">
-                            <tr><td colspan="5" class="tabla-cargando">Inicia sesion para ver tu historial.</td></tr>
+                    <table class="recent-table">
                         <thead>
                             <tr>
                                 <th>Fecha</th>
-                                <th>Categoria</th>
+                                <th>Categoría</th>
                                 <th>Monto</th>
                                 <th>Estado</th>
                                 <th>Referencia</th>
-                                <th>Acciones</th>
+                                <th>Acción</th>
                             </tr>
                         </thead>
                         <tbody id="historial-body">
-                            <tr><td colspan="6" class="tabla-cargando">Inicia sesion para ver tu historial.</td></tr>
+                            <tr><td colspan="6" class="tabla-cargando">Cargando historial...</td></tr>
                         </tbody>
                     </table>
                 </div>
             </section>
-        </div>
+
+        </main>
     </div>
 
 <script src="js/api.js"></script>
-<script src="js/validacion.js"></script>
 <script src="js/cliente.js"></script>
 </body>
 </html>
