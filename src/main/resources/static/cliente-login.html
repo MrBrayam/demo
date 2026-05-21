@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Acceso al portal del cliente.">
+    <title>Cliente — Inicio de sesion</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+    <header class="global-header">
+        <div class="global-header-inner">
+            <span class="global-logo">AF</span>
+            <div>
+                <h1 class="global-title">Portal del Cliente</h1>
+            </div>
+        </div>
+    </header>
+
+    <section class="login-panel" id="cliente-login">
+        <div class="login-card">
+            <h2>Inicio de sesion</h2>
+            <p>Ingresa con tu DNI y contrasena.</p>
+            <form id="form-cliente-login" novalidate>
+                <div class="campo">
+                    <label for="login-dni">DNI</label>
+                    <input type="text" id="login-dni" placeholder="DNI" autocomplete="username" maxlength="8">
+                </div>
+                <div class="campo">
+                    <label for="login-pass">Contrasena</label>
+                    <input type="password" id="login-pass" placeholder="Contrasena" autocomplete="current-password">
+                </div>
+                <p class="login-error" id="login-error"></p>
+                <button type="submit" class="btn-login" id="btn-login">Ingresar</button>
+            </form>
+        </div>
+    </section>
+
+<script src="js/api.js"></script>
+<script src="js/cliente.js"></script>
+</body>
+</html>

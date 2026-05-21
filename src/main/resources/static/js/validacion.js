@@ -34,6 +34,14 @@ function validarPaso1() {
         limpiarError('error-correo');
     }
 
+    const contrasena = document.getElementById('contrasena').value.trim();
+    if (contrasena.length < 4) {
+        mostrarError('error-contrasena', 'La contrasena debe tener al menos 4 caracteres.');
+        valido = false;
+    } else {
+        limpiarError('error-contrasena');
+    }
+
     return valido;
 }
 

@@ -30,6 +30,9 @@ public class Alumno {
     @Column(nullable = false, length = 150)
     private String correoTutor;
 
+    @Column(length = 100)
+    private String contrasena;
+
     @OneToMany(mappedBy = "alumno", cascade = CascadeType.ALL)
     @ToString.Exclude 
     private List<Matricula> matriculas;

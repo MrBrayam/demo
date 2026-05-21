@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Portal del cliente para matriculas y pagos.">
+    <title>Cliente — Matriculas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <div id="cliente-app" class="cliente-layout oculto">
+                </div>
+                <div class="campo">
+                    <label for="login-pass">Contrasena</label>
+                    <input type="password" id="login-pass" placeholder="Contrasena" autocomplete="current-password">
+                </div>
+                <p class="login-error" id="login-error"></p>
+                <button type="submit" class="btn-login" id="btn-login">Ingresar</button>
+            </form>
+                <div class="recent-header">
+                    <h2>Pagos pendientes</h2>
+                    <p>Selecciona una matricula pendiente y completa el pago con tarjeta.</p>
+                </div>
+
+                <div class="pago-grid">
+                    <div class="pago-card">
+                        <div class="recent-table-wrapper">
+                            <table class="recent-table">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Categoria</th>
+                                        <th>Monto</th>
+                                        <th>Estado</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="pendientes-body">
+                                    <tr><td colspan="5" class="tabla-cargando">Cargando pendientes...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="pago-card">
+                        <h3 class="pago-subtitulo">Detalle del pago</h3>
+                        <div class="pago-resumen">
+                            <div>
+                                <span>Matricula</span>
+                                <strong id="pago-id">-</strong>
+                            </div>
+                            <div>
+                                <span>Categoria</span>
+                                <strong id="pago-categoria">-</strong>
+                            </div>
+                            <div>
+                                <span>Monto</span>
+                                <strong id="pago-monto">-</strong>
+                            </div>
+                            <div>
+                                <span>Estado</span>
+                                <strong id="pago-estado">-</strong>
+                            </div>
+                            <div>
+                                <span>Fecha</span>
+                                <strong id="pago-fecha">-</strong>
+                            </div>
+                        </div>
+
+                        <form id="form-pago-tarjeta" novalidate>
+                            <div class="campo">
+                                <label for="tarjeta-numero">Numero de tarjeta <span class="req">*</span></label>
+                                <input type="text" id="tarjeta-numero" placeholder="**** **** **** 1234" maxlength="19">
+                            </div>
+                            <div class="campo">
+                                <label for="tarjeta-vencimiento">Vencimiento <span class="req">*</span></label>
+                                <input type="text" id="tarjeta-vencimiento" placeholder="MM/AA" maxlength="5">
+                            </div>
+                            <div class="campo">
+                                <label for="tarjeta-cvv">CVV <span class="req">*</span></label>
+                                <input type="text" id="tarjeta-cvv" placeholder="123" maxlength="4">
+                            </div>
+
+                            <div class="panel-actions mt-auto">
+                                <button type="button" class="btn-pagar" id="btn-pagar-pendiente" disabled>
+                                    Procesar pago
+                                </button>
+                            </div>
+                        </form>
+
+                        <p class="pago-mensaje" id="pago-mensaje"></p>
+                    </div>
+                </div>
+                                <button type="button" class="btn-descargar" id="btn-descargar" style="display:none">
+                                    Descargar constancia
+                                </button>
+                                <div class="placeholder-boton" id="placeholder-btn-descargar">
+                                    Descargar constancia
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </main>
+            </section>
+
+            <section class="historial-panel oculto" id="cliente-historial">
+                <div class="recent-header">
+                    <p>Consulta y paga tus matriculas pendientes.</p>
+                </div>
+                <div class="recent-table-wrapper">
+                            <tr><td colspan="5" class="tabla-cargando">Inicia sesion para ver tu historial.</td></tr>
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Categoria</th>
+                                <th>Monto</th>
+                                <th>Estado</th>
+                                <th>Referencia</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historial-body">
+                            <tr><td colspan="6" class="tabla-cargando">Inicia sesion para ver tu historial.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </div>
+
+<script src="js/api.js"></script>
+<script src="js/validacion.js"></script>
+<script src="js/cliente.js"></script>
+</body>
+</html>

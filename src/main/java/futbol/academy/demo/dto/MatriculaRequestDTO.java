@@ -25,6 +25,9 @@ public class MatriculaRequestDTO {
     @NotBlank
     private String correoTutor;
 
+    @NotBlank(message = "La contrasena es obligatoria")
+    private String contrasena;
+
     @NotNull(message = "La categoria es obligatoria")
     private Long categoriaId;
 

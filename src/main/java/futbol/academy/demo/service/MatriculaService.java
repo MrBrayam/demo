@@ -115,6 +115,66 @@ public class MatriculaService {
             .toList();
     }
 
+    public List<MatriculaRecienteDTO> listarMatriculasPorAlumno(String dni) {
+        return matriculaRepository.findByAlumnoDniOrderByFechaRegistroDesc(dni).stream()
+            .map(this::mapToReciente)
+            .toList();
+    }
+
+    public MatriculaRecienteDTO obtenerMatricula(Long matriculaId) {
+        return mapToReciente(matriculaRepository.findById(matriculaId)
+            .orElseThrow(() -> new RuntimeException("Matricula no encontrada")));
+    }
+
+    public void eliminarMatricula(Long matriculaId) {
+        Matricula matricula = matriculaRepository.findById(matriculaId)
+            .orElseThrow(() -> new RuntimeException("Matricula no encontrada"));
+        if (matricula.getEstado() == Matricula.EstadoMatricula.CONFIRMADA) {
+            Categoria categoria = matricula.getCategoria();
+            categoria.setCuposDisponibles(categoria.getCuposDisponibles() + 1);
+            categoriaRepository.save(categoria);
+        }
+        matriculaRepository.delete(matricula);
+    }
+
+    public MatriculaRecienteDTO pagarMatricula(Long matriculaId, String dni, String tokenPago) {
+        Matricula matricula = matriculaRepository.findById(matriculaId)
+            .orElseThrow(() -> new RuntimeException("Matricula no encontrada"));
+
+        if (matricula.getAlumno() == null || !matricula.getAlumno().getDni().equals(dni)) {
+            throw new IllegalArgumentException("Matricula no pertenece al alumno");
+        }
+
+        if (matricula.getEstado() == Matricula.EstadoMatricula.ANULADA) {
+            throw new IllegalArgumentException("La matricula esta anulada");
+        }
+
+        if (matricula.getEstado() == Matricula.EstadoMatricula.CONFIRMADA) {
+            return mapToReciente(matricula);
+        }
+
+        Categoria categoria = matricula.getCategoria();
+        if (categoria.getCuposDisponibles() <= 0) {
+            throw new SinCuposException("No hay cupos disponibles para esta categoria");
+        }
+
+        ResultadoPago resultado = pagoService.procesar(tokenPago, categoria.getMontoMatricula());
+        if (!resultado.isAprobado()) {
+            matricula.setEstado(Matricula.EstadoMatricula.RECHAZADA);
+            matriculaRepository.save(matricula);
+            throw new PagoRechazadoException(resultado.getMensaje());
+        }
+
+        categoria.setCuposDisponibles(categoria.getCuposDisponibles() - 1);
+        categoriaRepository.save(categoria);
+
+        matricula.setEstado(Matricula.EstadoMatricula.CONFIRMADA);
+        matricula.setReferenciaPago(resultado.getReferencia());
+        matriculaRepository.save(matricula);
+
+        return mapToReciente(matricula);
+    }
+
     public MatriculaRecienteDTO actualizarEstado(Long matriculaId, String estado) {
         Matricula matricula = matriculaRepository.findById(matriculaId)
             .orElseThrow(() -> new RuntimeException("Matricula no encontrada"));
@@ -198,6 +258,15 @@ public class MatriculaService {
 
     public Alumno verificarOCrearAlumno(MatriculaRequestDTO request) {
         return alumnoRepository.findByDni(request.getDni())
+            .map(alumno -> {
+                if ((alumno.getContrasena() == null || alumno.getContrasena().isBlank())
+                        && request.getContrasena() != null
+                        && !request.getContrasena().isBlank()) {
+                    alumno.setContrasena(request.getContrasena());
+                    return alumnoRepository.save(alumno);
+                }
+                return alumno;
+            })
             .orElseGet(() -> crearAlumno(request));
     }
 
@@ -207,6 +276,7 @@ public class MatriculaService {
         alumno.setFechaNacimiento(request.getFechaNacimiento());
         alumno.setDni(request.getDni());
         alumno.setCorreoTutor(request.getCorreoTutor());
+        alumno.setContrasena(request.getContrasena());
         return alumnoRepository.save(alumno);
     }
 

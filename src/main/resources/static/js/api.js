@@ -65,6 +65,134 @@ async function loginUsuario(datos) {
     return data;
 }
 
+async function loginCliente(datos) {
+    const response = await fetch(`${API_BASE}/cliente/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(datos)
+    });
+
+    const data = await response.json().catch(() => ({
+        success: false,
+        mensaje: 'Error al leer la respuesta del servidor'
+    }));
+
+    return data;
+}
+
+async function obtenerHistorialCliente(credenciales) {
+    const response = await fetch(`${API_BASE}/cliente/matriculas`, {
+        headers: {
+            'X-Cliente-Dni': credenciales.dni,
+            'X-Cliente-Pass': credenciales.contrasena
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error('No se pudo cargar el historial.');
+    }
+    return response.json();
+}
+
+async function pagarMatriculaCliente(credenciales, id, tokenPago) {
+    const response = await fetch(`${API_BASE}/cliente/matriculas/${id}/pagar`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Cliente-Dni': credenciales.dni,
+            'X-Cliente-Pass': credenciales.contrasena
+        },
+        body: JSON.stringify({ tokenPago })
+    });
+
+    if (!response.ok) {
+        const mensaje = await response.text();
+        throw new Error(mensaje || 'No se pudo procesar el pago.');
+    }
+    return response.json();
+}
+
+async function obtenerMatriculasAdmin(credenciales, estado = '') {
+    const query = estado ? `?estado=${encodeURIComponent(estado)}` : '';
+    const response = await fetch(`${API_BASE}/admin/matriculas${query}`, {
+        headers: {
+            'X-Admin-User': credenciales.username,
+            'X-Admin-Pass': credenciales.password
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error('No se pudieron cargar las matriculas.');
+    }
+    return response.json();
+}
+
+async function actualizarEstadoAdmin(credenciales, id, estado) {
+    const response = await fetch(`${API_BASE}/admin/matriculas/${id}/estado`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Admin-User': credenciales.username,
+            'X-Admin-Pass': credenciales.password
+        },
+        body: JSON.stringify({ estado })
+    });
+
+    if (!response.ok) {
+        const mensaje = await response.text();
+        throw new Error(mensaje || 'No se pudo actualizar el estado.');
+    }
+    return response.json();
+}
+
+async function actualizarCategoriaAdmin(credenciales, id, categoriaId) {
+    const response = await fetch(`${API_BASE}/admin/matriculas/${id}/categoria`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Admin-User': credenciales.username,
+            'X-Admin-Pass': credenciales.password
+        },
+        body: JSON.stringify({ categoriaId })
+    });
+
+    if (!response.ok) {
+        const mensaje = await response.text();
+        throw new Error(mensaje || 'No se pudo cambiar la categoria.');
+    }
+    return response.json();
+}
+
+async function eliminarMatriculaAdmin(credenciales, id) {
+    const response = await fetch(`${API_BASE}/admin/matriculas/${id}`, {
+        method: 'DELETE',
+        headers: {
+            'X-Admin-User': credenciales.username,
+            'X-Admin-Pass': credenciales.password
+        }
+    });
+
+    if (!response.ok && response.status !== 204) {
+        const mensaje = await response.text();
+        throw new Error(mensaje || 'No se pudo eliminar la matricula.');
+    }
+}
+
+async function obtenerReporteMensualAdmin(credenciales, anio, mes) {
+    const response = await fetch(`${API_BASE}/admin/reporte-mensual?anio=${anio}&mes=${mes}` , {
+        headers: {
+            'X-Admin-User': credenciales.username,
+            'X-Admin-Pass': credenciales.password
+        }
+    });
+
+    if (!response.ok) {
+        const mensaje = await response.text();
+        throw new Error(mensaje || 'No se pudo generar el reporte.');
+    }
+    return response.json();
+}
+
 async function registrarMatricula(datos) {
     const response = await fetch(`${API_BASE}/matriculas`, {
         method: 'POST',

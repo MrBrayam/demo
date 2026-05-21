@@ -11,4 +11,5 @@ public interface MatriculaRepository extends JpaRepository<Matricula, Long> {
 	List<Matricula> findAllByOrderByFechaRegistroDesc(Pageable pageable);
 	List<Matricula> findByEstado(Matricula.EstadoMatricula estado);
 	List<Matricula> findByFechaRegistroBetween(LocalDateTime inicio, LocalDateTime fin);
+	List<Matricula> findByAlumnoDniOrderByFechaRegistroDesc(String dni);
 }

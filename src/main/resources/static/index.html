@@ -32,210 +32,42 @@
             <form id="form-login" novalidate>
                 <div class="campo">
                     <label for="login-user">Usuario</label>
-                    <input type="text" id="login-user" placeholder="usuario" autocomplete="username">
-                </div>
-                <div class="campo">
-                    <label for="login-pass">Clave</label>
-                    <input type="password" id="login-pass" placeholder="clave" autocomplete="current-password">
-                </div>
-                <p class="login-error" id="login-error"></p>
-                <button type="submit" class="btn-login" id="btn-login">Ingresar</button>
-            </form>
-        </div>
-    </section>
+                    <!DOCTYPE html>
+                    <html lang="es">
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <meta name="description" content="Portal de acceso para clientes y administradores.">
+                        <title>Academia de Futbol</title>
+                        <link rel="preconnect" href="https://fonts.googleapis.com">
+                        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+                        <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
+                        <link rel="stylesheet" href="css/styles.css">
+                    </head>
+                    <body>
 
-    <div id="app-content" class="oculto">
-        <main class="main-content">
+                        <header class="global-header">
+                            <div class="global-header-inner">
+                                <span class="global-logo">AF</span>
+                                <div>
+                                    <h1 class="global-title">Academia de Futbol</h1>
+                                </div>
+                            </div>
+                        </header>
 
-        <div class="panel" id="paso-1">
-            <div class="panel-header">
-                <span class="panel-icon">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                </span>
-                <span class="panel-title">Paso 1 · Datos del Alumno</span>
-            </div>
-            <div class="panel-body">
+                        <main class="landing">
+                            <div class="landing-card">
+                                <h2>Cliente</h2>
+                                <p>Registra matriculas, revisa tu historial y paga pendientes.</p>
+                                <a class="btn-link" href="cliente.html">Ir al portal de cliente</a>
+                            </div>
+                            <div class="landing-card">
+                                <h2>Administrador</h2>
+                                <p>Gestiona matriculas, actualiza estados y genera reportes.</p>
+                                <a class="btn-link" href="admin.html">Ir al portal de administrador</a>
+                            </div>
+                        </main>
 
-                <div class="campo">
-                    <label for="nombre">Nombre completo <span class="req">*</span></label>
-                    <input type="text" id="nombre" placeholder="ej. Juan Pérez Ríos" autocomplete="name">
-                    <span class="error" id="error-nombre"></span>
-                </div>
-
-                <div class="campo">
-                    <label for="fechaNacimiento">Fecha de nacimiento <span class="req">*</span></label>
-                    <input type="date" id="fechaNacimiento">
-                    <span class="error" id="error-fecha"></span>
-                </div>
-
-                <div class="campo">
-                    <label for="dni">DNI / Documento <span class="req">*</span></label>
+                    </body>
+                    </html>
                     <input type="text" id="dni" placeholder="12345678" maxlength="8" autocomplete="off">
-                    <span class="error" id="error-dni"></span>
-                </div>
-
-                <div class="campo">
-                    <label for="correoTutor">Correo del tutor <span class="req">*</span></label>
-                    <input type="email" id="correoTutor" placeholder="correo@ejemplo.com" autocomplete="email">
-                    <span class="error" id="error-correo"></span>
-                </div>
-
-                <div class="panel-actions mt-auto">
-                    <button type="button" class="btn-siguiente" id="btn-siguiente-1">
-                        Siguiente 
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 4px; vertical-align: middle;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-                    </button>
-                </div>
-
-            </div>
-        </div>
-
-        <div class="arrow-separator" id="arrow-1">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#f0a11a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-        </div>
-
-        <div class="panel disabled-panel" id="paso-2">
-            <div class="panel-header">
-                <span class="panel-icon">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-                </span>
-                <span class="panel-title">Paso 2 · Categoría y Pago</span>
-            </div>
-            <div class="panel-body">
-
-                <div class="campo">
-                    <label for="categoria">Categoría <span class="req">*</span></label>
-                    <select id="categoria">
-                        <option value="">Infantil / Junior / Sub-17</option>
-                    </select>
-                    <span class="error" id="error-categoria"></span>
-                </div>
-
-                <div class="campo">
-                    <label>Monto de matrícula</label>
-                    <div class="monto-display" id="montoDisplay">S/ 150.00</div>
-                </div>
-
-                <div class="campo">
-                    <label>Método de pago <span class="req">*</span></label>
-                    <div class="radio-group">
-                        <label class="radio-option">
-                            <input type="radio" name="metodoPago" value="TARJETA" id="radio-tarjeta">
-                            <span class="radio-custom"></span>
-                            Tarjeta / Transferencia
-                        </label>
-                    </div>
-                    <span class="error" id="error-metodo"></span>
-                </div>
-
-                <div class="campo" id="campo-tarjeta" style="display:none">
-                    <label for="numeroTarjeta">Número de tarjeta <span class="req">*</span></label>
-                    <input type="text" id="numeroTarjeta" placeholder="**** **** **** 1234" maxlength="19">
-                    <span class="error" id="error-tarjeta"></span>
-                </div>
-
-                <div class="panel-actions mt-auto text-center">
-                    <button type="button" class="btn-pagar" id="btn-pagar" disabled>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: middle;"><rect x="2" y="5" width="20" height="14" rx="2" ry="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
-                        <span id="pagar-label">Pagar S/ 150.00</span>
-                    </button>
-                </div>
-
-            </div>
-        </div>
-
-        <div class="arrow-separator" id="arrow-2">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#f0a11a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-        </div>
-
-        <div class="panel disabled-panel" id="paso-3">
-            <div class="panel-header">
-                <span class="panel-icon">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
-                </span>
-                <span class="panel-title">Paso 3 · Confirmación</span>
-            </div>
-            <div class="panel-body confirmacion-body">
-
-                <div class="check-circle-wrapper">
-                    <div class="check-circle">
-                        <svg viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="26" cy="26" r="25" stroke="#2f6d2f" stroke-width="1.5" fill="#e7f3e7"/>
-                            <path d="M16 26L23 33L36 18" stroke="#2f6d2f" stroke-width="3"
-                                  stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </div>
-                </div>
-
-                <h2 class="exito-titulo">¡Matrícula registrada<br>con éxito!</h2>
-                <p class="exito-desc">Constancia enviada al<br>correo del tutor.</p>
-                <p class="exito-ref" id="referenciaConfirmacion"></p>
-
-                <div class="panel-actions col mt-auto text-center">
-                    <button type="button" class="btn-descargar" id="btn-descargar" style="display:none">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: middle;"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
-                        Descargar Constancia
-                    </button>
-                    <div class="placeholder-boton" id="placeholder-btn-descargar">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: middle;"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
-                        Descargar Constancia
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
-        </main>
-
-        <section class="recent-panel" id="transacciones-recientes">
-        <div class="recent-header">
-            <h2>Transacciones recientes</h2>
-            <p>Ultimas matriculas registradas</p>
-        </div>
-        <div class="recent-table-wrapper">
-            <table class="recent-table">
-                <thead>
-                    <tr>
-                        <th>Fecha</th>
-                        <th>Alumno</th>
-                        <th>Categoria</th>
-                        <th>Monto</th>
-                        <th>Estado</th>
-                        <th>Referencia</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="recent-body">
-                    <tr><td colspan="7" class="tabla-cargando">Cargando...</td></tr>
-                </tbody>
-            </table>
-        </div>
-        </section>
-
-    <section class="reporte-panel" id="reporte-mensual">
-        <div class="reporte-card">
-            <h2>Reporte mensual</h2>
-            <p>Resumen de matriculas por mes.</p>
-            <form id="form-reporte" class="reporte-form">
-                <div class="reporte-fila">
-                    <div class="campo">
-                        <label for="reporte-anio">Anio</label>
-                        <input type="number" id="reporte-anio" min="2020" max="2100" placeholder="2026">
-                    </div>
-                    <div class="campo">
-                        <label for="reporte-mes">Mes</label>
-                        <input type="number" id="reporte-mes" min="1" max="12" placeholder="5">
-                    </div>
-                </div>
-                <button type="submit" class="btn-reporte">Generar reporte</button>
-            </form>
-            <div id="reporte-resultado" class="reporte-resultado"></div>
-        </div>
-    </section>
-    </div>
-
-<script src="js/api.js"></script>
-<script src="js/validacion.js"></script>
-<script src="js/main.js"></script>
-</body>
-</html>

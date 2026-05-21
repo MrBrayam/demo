@@ -67,11 +67,101 @@ body {
     font-size: 24px;
     font-weight: 700;
 }
+.landing {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+}
+
+.landing-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    padding: 20px;
+}
+
+.landing-card h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--green-dark);
+    margin-bottom: 6px;
+}
+
+.landing-card p {
+    font-size: 13px;
+    color: var(--gray-600);
+    margin-bottom: 12px;
+}
+
+.btn-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 16px;
+    background: var(--green-dark);
+    color: var(--white);
+    text-decoration: none;
+    font-weight: 600;
+}
 
 .login-panel {
     max-width: 420px;
     margin: 24px auto 10px;
     padding: 0 20px;
+}
+
+.cliente-layout {
+    max-width: 1200px;
+    margin: 20px auto 40px;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 20px;
+}
+
+.cliente-sidebar {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.cliente-user {
+    font-weight: 700;
+    color: var(--green-dark);
+    margin-bottom: 6px;
+}
+
+.cliente-nav {
+    border: 1px solid var(--gray-200);
+    background: var(--gray-100);
+    padding: 10px 12px;
+    text-align: left;
+    font-weight: 600;
+    color: var(--text);
+    cursor: pointer;
+}
+
+.cliente-nav.activo {
+    background: var(--green-dark);
+    color: var(--white);
+    border-color: var(--green-dark);
+}
+
+.cliente-content {
+    min-width: 0;
+}
+
+.cliente-content .main-content {
+    max-width: 100%;
+    margin: 0 0 30px;
+    padding: 0;
 }
 
 .login-card {
@@ -126,6 +216,10 @@ body {
     align-items: stretch;
     justify-content: space-between;
     gap: 10px;
+}
+.arrow-text {
+    font-size: 22px;
+    color: var(--orange);
 }
 
 .panel {
@@ -298,6 +392,13 @@ button {
     border-radius: 4px;
     margin-left: 6px;
 }
+.btn-recargar {
+    background: var(--green-dark);
+    color: var(--white);
+    padding: 8px 12px;
+    font-size: 12px;
+    width: auto;
+}
 
 .placeholder-boton {
     background: var(--green-dark);
@@ -373,6 +474,11 @@ button:disabled {
 }
 
 .recent-panel {
+    max-width: 1200px;
+    margin: 0 auto 40px;
+    padding: 0 20px;
+}
+.historial-panel {
     max-width: 1200px;
     margin: 0 auto 40px;
     padding: 0 20px;
@@ -474,6 +580,42 @@ button:disabled {
     margin: 0 auto 40px;
     padding: 0 20px;
 }
+.admin-panel {
+    max-width: 1200px;
+    margin: 20px auto 30px;
+    padding: 0 20px;
+}
+
+.admin-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.admin-header h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--green-dark);
+}
+
+.admin-header p {
+    font-size: 13px;
+    color: var(--gray-600);
+}
+
+.admin-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.admin-actions select {
+    padding: 6px 8px;
+    border: 1px solid var(--gray-200);
+}
 
 .reporte-card {
     background: var(--white);
@@ -557,5 +699,9 @@ button:disabled {
 
     .recent-panel {
         margin-top: 20px;
+    }
+
+    .cliente-layout {
+        grid-template-columns: 1fr;
     }
 }
