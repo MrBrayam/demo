@@ -91,6 +91,32 @@ public class MatriculaService {
         return new MatriculaResponseDTO(matricula.getId(), "CONFIRMADA", resultado.getReferencia());
     }
 
+    public MatriculaRecienteDTO registrarMatriculaManual(String dni, Long categoriaId) {
+        Alumno alumno = alumnoRepository.findByDni(dni)
+            .orElseThrow(() -> new RuntimeException("Alumno no encontrado con DNI: " + dni));
+            
+        Categoria categoria = categoriaRepository.findById(categoriaId)
+            .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
+
+        if (!categoria.getActivo()) {
+            throw new IllegalArgumentException("La categoría seleccionada no está activa.");
+        }
+
+        if (categoria.getCuposDisponibles() <= 0) {
+            throw new SinCuposException("No hay cupos disponibles en la categoría seleccionada.");
+        }
+
+        Matricula matricula = new Matricula();
+        matricula.setAlumno(alumno);
+        matricula.setCategoria(categoria);
+        matricula.setFechaRegistro(LocalDateTime.now());
+        matricula.setEstado(Matricula.EstadoMatricula.PENDIENTE);
+        
+        matriculaRepository.save(matricula);
+
+        return mapToReciente(matricula);
+    }
+
     public byte[] obtenerConstancia(Long matriculaId) {
         Matricula matricula = matriculaRepository.findById(matriculaId)
             .orElseThrow(() -> new RuntimeException("Matrícula no encontrada con ID: " + matriculaId));

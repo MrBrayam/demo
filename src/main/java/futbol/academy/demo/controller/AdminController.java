@@ -90,12 +90,15 @@ public class AdminController {
     public ResponseEntity<?> crearMatricula(
             @RequestHeader(value = "X-Admin-User", required = false) String username,
             @RequestHeader(value = "X-Admin-Pass", required = false) String password,
-            @Validated @RequestBody MatriculaRequestDTO request) {
+            @RequestBody java.util.Map<String, Object> request) {
         if (credencialesInvalidas(username, password)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales invalidas");
         }
-        MatriculaResponseDTO response = matriculaService.registrarMatricula(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        String dni = request.get("alumnoDni").toString();
+        Long categoriaId = Long.valueOf(request.get("categoriaId").toString());
+        
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(matriculaService.registrarMatriculaManual(dni, categoriaId));
     }
 
     @PutMapping("/matriculas/{id}/estado")

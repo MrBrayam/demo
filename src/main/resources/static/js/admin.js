@@ -20,8 +20,26 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('admin-recargar')?.addEventListener('click', cargarMatriculasAdmin);
     document.getElementById('admin-estado')?.addEventListener('change', cargarMatriculasAdmin);
     
-    document.getElementById('btn-nueva-matricula')?.addEventListener('click', () => {
+    document.getElementById('btn-nueva-matricula')?.addEventListener('click', async () => {
         document.getElementById('form-matricula').reset();
+        
+        const select = document.getElementById('matricula-categoria');
+        if (select) {
+            select.innerHTML = '<option value="">Cargando...</option>';
+            try {
+                const cats = await obtenerCategoriasAdmin(credencialesAdmin);
+                const activas = cats.filter(c => c.activo);
+                if (activas.length === 0) {
+                    select.innerHTML = '<option value="">No hay categorías activas</option>';
+                } else {
+                    select.innerHTML = '<option value="">Seleccione...</option>' + 
+                        activas.map(c => `<option value="${c.id}">${c.nombre} (S/ ${c.montoMatricula ? c.montoMatricula.toFixed(2) : '0.00'})</option>`).join('');
+                }
+            } catch (error) {
+                select.innerHTML = '<option value="">Error al cargar</option>';
+            }
+        }
+
         document.getElementById('form-matricula-card').classList.remove('oculto');
     });
     document.getElementById('btn-cancelar-matricula')?.addEventListener('click', () => {
