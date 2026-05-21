@@ -16,6 +16,21 @@ async function obtenerTransaccionesRecientes(limit = 5) {
     return response.json();
 }
 
+async function loginUsuario(datos) {
+    const response = await fetch(`${API_BASE}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(datos)
+    });
+
+    const data = await response.json().catch(() => ({
+        success: false,
+        mensaje: 'Error al leer la respuesta del servidor'
+    }));
+
+    return data;
+}
+
 async function registrarMatricula(datos) {
     const response = await fetch(`${API_BASE}/matriculas`, {
         method: 'POST',

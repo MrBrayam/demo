@@ -1,7 +1,18 @@
 let categorias = [];
 let matriculaIdConfirmada = null;
+let usuarioActual = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
+
+    const formLogin = document.getElementById('form-login');
+    if (formLogin) {
+        formLogin.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            await manejarLogin();
+        });
+    } else {
+        mostrarApp();
+    }
 
     try {
         categorias = await obtenerCategorias();
@@ -121,7 +132,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     actualizarMontoYBoton();
-    cargarTransaccionesRecientes();
 });
 
 function actualizarMontoYBoton() {
@@ -130,6 +140,49 @@ function actualizarMontoYBoton() {
     const montoTexto = cat ? `S/ ${cat.montoMatricula}` : 'S/ 150.00';
     document.getElementById('montoDisplay').textContent = montoTexto;
     document.getElementById('pagar-label').textContent = cat ? `Pagar ${montoTexto}` : 'Pagar S/ 150.00';
+}
+
+async function manejarLogin() {
+    const usuario = document.getElementById('login-user').value.trim();
+    const clave = document.getElementById('login-pass').value;
+    const errorEl = document.getElementById('login-error');
+    const btnLogin = document.getElementById('btn-login');
+
+    if (errorEl) errorEl.textContent = '';
+    if (btnLogin) {
+        btnLogin.disabled = true;
+        btnLogin.textContent = 'Ingresando...';
+    }
+
+    try {
+        const respuesta = await loginUsuario({ username: usuario, password: clave });
+        if (respuesta && respuesta.success) {
+            usuarioActual = respuesta.nombre || usuario;
+            mostrarApp();
+            return;
+        }
+
+        if (errorEl) {
+            errorEl.textContent = respuesta?.mensaje || 'Credenciales invalidas';
+        }
+    } catch (error) {
+        if (errorEl) {
+            errorEl.textContent = 'Error de conexion con el servidor';
+        }
+    } finally {
+        if (btnLogin) {
+            btnLogin.disabled = false;
+            btnLogin.textContent = 'Ingresar';
+        }
+    }
+}
+
+function mostrarApp() {
+    const loginPanel = document.getElementById('login-panel');
+    const appContent = document.getElementById('app-content');
+    if (loginPanel) loginPanel.classList.add('oculto');
+    if (appContent) appContent.classList.remove('oculto');
+    cargarTransaccionesRecientes();
 }
 
 async function cargarTransaccionesRecientes() {

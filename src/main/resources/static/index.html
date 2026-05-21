@@ -24,7 +24,28 @@
             </div>
         </div>
     </header>
-    <main class="main-content">
+
+    <section class="login-panel" id="login-panel">
+        <div class="login-card">
+            <h2>Inicio de sesion</h2>
+            <p>Ingresa tus credenciales para continuar.</p>
+            <form id="form-login" novalidate>
+                <div class="campo">
+                    <label for="login-user">Usuario</label>
+                    <input type="text" id="login-user" placeholder="usuario" autocomplete="username">
+                </div>
+                <div class="campo">
+                    <label for="login-pass">Clave</label>
+                    <input type="password" id="login-pass" placeholder="clave" autocomplete="current-password">
+                </div>
+                <p class="login-error" id="login-error"></p>
+                <button type="submit" class="btn-login" id="btn-login">Ingresar</button>
+            </form>
+        </div>
+    </section>
+
+    <div id="app-content" class="oculto">
+        <main class="main-content">
 
         <div class="panel" id="paso-1">
             <div class="panel-header">
@@ -164,9 +185,9 @@
             </div>
         </div>
 
-    </main>
+        </main>
 
-    <section class="recent-panel" id="transacciones-recientes">
+        <section class="recent-panel" id="transacciones-recientes">
         <div class="recent-header">
             <h2>Transacciones recientes</h2>
             <p>Ultimas matriculas registradas</p>
@@ -189,7 +210,8 @@
                 </tbody>
             </table>
         </div>
-    </section>
+        </section>
+    </div>
 
 <script src="js/api.js"></script>
 <script src="js/validacion.js"></script>

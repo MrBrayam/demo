@@ -28,6 +28,10 @@ body {
     line-height: 1.4;
 }
 
+.oculto {
+    display: none;
+}
+
 .global-header {
     background: var(--green-dark);
     color: var(--white);
@@ -62,6 +66,44 @@ body {
     margin-left: auto;
     font-size: 24px;
     font-weight: 700;
+}
+
+.login-panel {
+    max-width: 420px;
+    margin: 24px auto 10px;
+    padding: 0 20px;
+}
+
+.login-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    padding: 20px;
+}
+
+.login-card h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--green-dark);
+    margin-bottom: 6px;
+}
+
+.login-card p {
+    font-size: 13px;
+    color: var(--gray-600);
+    margin-bottom: 12px;
+}
+
+.login-error {
+    min-height: 16px;
+    margin: 8px 0 12px;
+    color: #b00020;
+    font-size: 12px;
+}
+
+.btn-login {
+    background: var(--green-dark);
+    color: var(--white);
 }
 
 .flow-hint {
