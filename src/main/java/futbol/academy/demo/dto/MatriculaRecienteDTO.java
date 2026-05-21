@@ -7,6 +7,7 @@ public record MatriculaRecienteDTO(
     Long id,
     String alumno,
     String categoria,
+    Long categoriaId,
     BigDecimal montoMatricula,
     LocalDateTime fechaRegistro,
     String estado,

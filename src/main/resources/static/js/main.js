@@ -110,10 +110,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-    document.getElementById('recent-body').addEventListener('click', function(e) {
-        const btn = e.target.closest('.btn-generar-txt');
-        if (btn) {
-            const item = JSON.parse(decodeURIComponent(btn.getAttribute('data-transaccion')));
+    document.getElementById('recent-body').addEventListener('click', async function(e) {
+        const btnTxt = e.target.closest('.btn-generar-txt');
+        if (btnTxt) {
+            const item = JSON.parse(decodeURIComponent(btnTxt.getAttribute('data-transaccion')));
             const fecha = formatearFecha(item.fechaRegistro);
             const monto = item.montoMatricula != null ? `S/ ${Number(item.montoMatricula).toFixed(2)}` : 'S/ -';
             const referencia = item.referenciaPago || 'N/A';
@@ -128,8 +128,51 @@ document.addEventListener('DOMContentLoaded', async () => {
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
+            return;
+        }
+
+        const btnAnular = e.target.closest('.btn-anular');
+        if (btnAnular) {
+            const id = Number(btnAnular.getAttribute('data-id'));
+            if (!id) return;
+            if (!confirm('Deseas anular esta matricula?')) return;
+            try {
+                await actualizarEstadoMatricula(id, 'ANULADA');
+                cargarTransaccionesRecientes();
+            } catch (error) {
+                alert(error.message);
+            }
+            return;
+        }
+
+        const btnCambiar = e.target.closest('.btn-cambiar');
+        if (btnCambiar) {
+            const id = Number(btnCambiar.getAttribute('data-id'));
+            if (!id) return;
+            const nuevaCategoria = prompt('ID de nueva categoria:');
+            if (!nuevaCategoria) return;
+            try {
+                await actualizarCategoriaMatricula(id, Number(nuevaCategoria));
+                cargarTransaccionesRecientes();
+            } catch (error) {
+                alert(error.message);
+            }
         }
     });
+
+    const formReporte = document.getElementById('form-reporte');
+    if (formReporte) {
+        const hoy = new Date();
+        const inputAnio = document.getElementById('reporte-anio');
+        const inputMes = document.getElementById('reporte-mes');
+        if (inputAnio && !inputAnio.value) inputAnio.value = String(hoy.getFullYear());
+        if (inputMes && !inputMes.value) inputMes.value = String(hoy.getMonth() + 1);
+
+        formReporte.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            await cargarReporteMensual();
+        });
+    }
 
     actualizarMontoYBoton();
 });
@@ -205,6 +248,7 @@ async function cargarTransaccionesRecientes() {
                 : 'S/ -';
             const estadoClase = obtenerClaseEstado(item.estado);
             const referencia = item.referenciaPago || 'N/A';
+            const deshabilitarAcciones = item.estado === 'ANULADA';
 
             return `
                 <tr>
@@ -217,6 +261,12 @@ async function cargarTransaccionesRecientes() {
                     <td>
                         <button class="btn-generar-txt" data-transaccion='${encodeURIComponent(JSON.stringify(item))}'>
                             Generar .txt
+                        </button>
+                        <button class="btn-accion btn-anular" data-id="${item.id}" ${deshabilitarAcciones ? 'disabled' : ''}>
+                            Anular
+                        </button>
+                        <button class="btn-accion btn-cambiar" data-id="${item.id}" ${deshabilitarAcciones ? 'disabled' : ''}>
+                            Cambiar categoria
                         </button>
                     </td>
                 </tr>
@@ -246,4 +296,58 @@ function formatearFecha(fechaStr) {
 function obtenerClaseEstado(estado) {
     if (!estado) return 'estado-pendiente';
     return `estado-${estado.toLowerCase().replace(/_/g, '-')}`;
+}
+
+async function cargarReporteMensual() {
+    const anio = Number(document.getElementById('reporte-anio').value);
+    const mes = Number(document.getElementById('reporte-mes').value);
+    const resultado = document.getElementById('reporte-resultado');
+    if (!resultado) return;
+
+    resultado.textContent = 'Generando reporte...';
+
+    try {
+        const data = await obtenerReporteMensual(anio, mes);
+        renderReporteMensual(data);
+    } catch (error) {
+        resultado.textContent = 'Error al generar el reporte.';
+    }
+}
+
+function renderReporteMensual(data) {
+    const resultado = document.getElementById('reporte-resultado');
+    if (!resultado) return;
+
+    const monto = data.montoConfirmado != null
+        ? `S/ ${Number(data.montoConfirmado).toFixed(2)}`
+        : 'S/ 0.00';
+
+    resultado.innerHTML = `
+        <div class="reporte-grid">
+            <div class="reporte-item">
+                <span>Total</span>
+                <strong>${data.totalMatriculas}</strong>
+            </div>
+            <div class="reporte-item">
+                <span>Confirmadas</span>
+                <strong>${data.confirmadas}</strong>
+            </div>
+            <div class="reporte-item">
+                <span>Pendientes</span>
+                <strong>${data.pendientes}</strong>
+            </div>
+            <div class="reporte-item">
+                <span>Rechazadas</span>
+                <strong>${data.rechazadas}</strong>
+            </div>
+            <div class="reporte-item">
+                <span>Anuladas</span>
+                <strong>${data.anuladas}</strong>
+            </div>
+            <div class="reporte-item">
+                <span>Monto confirmado</span>
+                <strong>${monto}</strong>
+            </div>
+        </div>
+    `;
 }

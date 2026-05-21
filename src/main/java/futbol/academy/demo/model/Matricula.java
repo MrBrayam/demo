@@ -36,6 +36,6 @@ public class Matricula {
     private String referenciaPago;
 
     public enum EstadoMatricula {
-        PENDIENTE, CONFIRMADA, RECHAZADA, EN_ESPERA
+        PENDIENTE, CONFIRMADA, RECHAZADA, EN_ESPERA, ANULADA
     }
 }

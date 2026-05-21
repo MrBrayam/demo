@@ -16,6 +16,40 @@ async function obtenerTransaccionesRecientes(limit = 5) {
     return response.json();
 }
 
+async function actualizarEstadoMatricula(id, estado) {
+    const response = await fetch(`${API_BASE}/matriculas/${id}/estado`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ estado })
+    });
+
+    if (!response.ok) {
+        throw new Error('No se pudo actualizar el estado.');
+    }
+    return response.json();
+}
+
+async function actualizarCategoriaMatricula(id, categoriaId) {
+    const response = await fetch(`${API_BASE}/matriculas/${id}/categoria`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ categoriaId })
+    });
+
+    if (!response.ok) {
+        throw new Error('No se pudo cambiar la categoria.');
+    }
+    return response.json();
+}
+
+async function obtenerReporteMensual(anio, mes) {
+    const response = await fetch(`${API_BASE}/matriculas/reporte-mensual?anio=${anio}&mes=${mes}`);
+    if (!response.ok) {
+        throw new Error('No se pudo generar el reporte mensual.');
+    }
+    return response.json();
+}
+
 async function loginUsuario(datos) {
     const response = await fetch(`${API_BASE}/auth/login`, {
         method: 'POST',
@@ -64,7 +98,7 @@ async function descargarConstancia(matriculaId) {
     const url = URL.createObjectURL(blob);
     const enlace = document.createElement('a');
     enlace.href = url;
-    enlace.download = `constancia_${matriculaId}.txt`;
+    enlace.download = `constancia_${matriculaId}.pdf`;
     enlace.click();
     URL.revokeObjectURL(url);
 }

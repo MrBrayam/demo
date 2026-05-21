@@ -289,6 +289,16 @@ button {
     border-radius: 4px;
 }
 
+.btn-accion {
+    background: #e0e0e0;
+    color: var(--text);
+    padding: 6px 10px;
+    font-size: 12px;
+    width: auto;
+    border-radius: 4px;
+    margin-left: 6px;
+}
+
 .placeholder-boton {
     background: var(--green-dark);
     color: var(--white);
@@ -451,6 +461,84 @@ button:disabled {
     background: #e6e6e6;
     color: #4d4d4d;
     border-color: #d4d4d4;
+}
+
+.estado-anulada {
+    background: #e6e6e6;
+    color: #4d4d4d;
+    border-color: #d4d4d4;
+}
+
+.reporte-panel {
+    max-width: 1200px;
+    margin: 0 auto 40px;
+    padding: 0 20px;
+}
+
+.reporte-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    padding: 20px;
+}
+
+.reporte-card h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--green-dark);
+    margin-bottom: 6px;
+}
+
+.reporte-card p {
+    font-size: 13px;
+    color: var(--gray-600);
+    margin-bottom: 12px;
+}
+
+.reporte-form {
+    margin-bottom: 12px;
+}
+
+.reporte-fila {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(140px, 1fr));
+    gap: 12px;
+}
+
+.btn-reporte {
+    background: var(--green-dark);
+    color: var(--white);
+    margin-top: 8px;
+}
+
+.reporte-resultado {
+    min-height: 20px;
+    color: var(--gray-600);
+    font-size: 13px;
+}
+
+.reporte-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+}
+
+.reporte-item {
+    border: 1px solid var(--gray-200);
+    padding: 10px 12px;
+    background: var(--gray-100);
+}
+
+.reporte-item span {
+    display: block;
+    color: var(--gray-600);
+    font-size: 12px;
+    margin-bottom: 4px;
+}
+
+.reporte-item strong {
+    font-size: 14px;
+    color: var(--text);
 }
 
 @media (max-width: 900px) {
