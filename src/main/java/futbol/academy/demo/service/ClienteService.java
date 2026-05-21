@@ -19,6 +19,7 @@ public class ClienteService {
         if (dni == null || contrasena == null) {
             return Optional.empty();
         }
-        return alumnoRepository.findByDniAndContrasena(dni, contrasena);
+        return alumnoRepository.findByDniAndContrasena(dni, contrasena)
+                .filter(Alumno::getActivo);
     }
 }

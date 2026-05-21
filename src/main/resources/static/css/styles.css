@@ -113,7 +113,7 @@ body {
     padding: 0 20px;
 }
 
-.cliente-layout {
+.cliente-layout, .admin-layout {
     max-width: 1200px;
     margin: 20px auto 40px;
     padding: 0 20px;
@@ -122,7 +122,7 @@ body {
     gap: 20px;
 }
 
-.cliente-sidebar {
+.cliente-sidebar, .admin-sidebar {
     background: var(--white);
     border: 1px solid var(--gray-200);
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
@@ -138,7 +138,7 @@ body {
     margin-bottom: 6px;
 }
 
-.cliente-nav {
+.cliente-nav, .admin-nav {
     border: 1px solid var(--gray-200);
     background: var(--gray-100);
     padding: 10px 12px;
@@ -148,7 +148,7 @@ body {
     cursor: pointer;
 }
 
-.cliente-nav.activo {
+.cliente-nav.activo, .admin-nav.activo {
     background: var(--green-dark);
     color: var(--white);
     border-color: var(--green-dark);
@@ -604,6 +604,19 @@ button:disabled {
 .admin-header p {
     font-size: 13px;
     color: var(--gray-600);
+}
+
+.admin-form-card {
+    background: #fdfdfd;
+    border: 1px solid #e0e0e0;
+    border-left: 3px solid var(--green-dark);
+    padding: 15px 20px;
+    margin-bottom: 20px;
+}
+.admin-form-card h3 {
+    font-size: 15px;
+    color: var(--green-dark);
+    margin-bottom: 5px;
 }
 
 .admin-actions {

@@ -40,64 +40,297 @@
         </div>
     </section>
 
-    <div id="admin-content" class="oculto">
-        <section class="admin-panel">
-            <div class="admin-header">
-                <div>
-                    <h2>Gestion de matriculas</h2>
-                    <p>CRUD de matriculas registradas.</p>
-                </div>
-                <div class="admin-actions">
-                    <select id="admin-estado">
-                        <option value="">Todos</option>
-                        <option value="CONFIRMADA">Confirmada</option>
-                        <option value="PENDIENTE">Pendiente</option>
-                        <option value="RECHAZADA">Rechazada</option>
-                        <option value="EN_ESPERA">En espera</option>
-                        <option value="ANULADA">Anulada</option>
-                    </select>
-                    <button class="btn-recargar" id="admin-recargar">Recargar</button>
-                </div>
-            </div>
-            <div class="recent-table-wrapper">
-                <table class="recent-table">
-                    <thead>
-                        <tr>
-                            <th>Fecha</th>
-                            <th>Alumno</th>
-                            <th>Categoria</th>
-                            <th>Estado</th>
-                            <th>Referencia</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="admin-body">
-                        <tr><td colspan="6" class="tabla-cargando">Inicia sesion para ver las matriculas.</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
+    <div id="admin-content" class="admin-layout oculto">
+        <aside class="admin-sidebar">
+            <div class="cliente-user" id="admin-user-display">Administrador</div>
+            <button class="admin-nav activo" data-view="matriculas">Matrículas</button>
+            <button class="admin-nav" data-view="alumnos">Clientes (Alumnos)</button>
+            <button class="admin-nav" data-view="categorias">Categorías</button>
+            <button class="admin-nav" data-view="usuarios">Administradores</button>
+            <button class="admin-nav" data-view="reportes">Reportes</button>
+            <a href="admin.html" class="btn-link" style="margin-top: auto; text-align: center;">Cerrar sesión</a>
+        </aside>
 
-        <section class="reporte-panel" id="admin-reporte">
-            <div class="reporte-card">
-                <h2>Reporte mensual</h2>
-                <p>Resumen del periodo seleccionado.</p>
-                <form id="form-admin-reporte" class="reporte-form">
-                    <div class="reporte-fila">
-                        <div class="campo">
-                            <label for="admin-reporte-anio">Anio</label>
-                            <input type="number" id="admin-reporte-anio" min="2020" max="2100" placeholder="2026">
-                        </div>
-                        <div class="campo">
-                            <label for="admin-reporte-mes">Mes</label>
-                            <input type="number" id="admin-reporte-mes" min="1" max="12" placeholder="5">
-                        </div>
+        <main class="cliente-content">
+            <!-- MATRICULAS -->
+            <section class="admin-view" id="view-matriculas">
+                <div class="admin-header">
+                    <div>
+                        <h2>Gestión de matrículas</h2>
+                        <p>CRUD de matrículas registradas.</p>
                     </div>
-                    <button type="submit" class="btn-reporte">Generar reporte</button>
-                </form>
-                <div id="admin-reporte-resultado" class="reporte-resultado"></div>
-            </div>
-        </section>
+                    <div class="admin-actions">
+                        <select id="admin-estado">
+                            <option value="">Todos</option>
+                            <option value="CONFIRMADA">Confirmada</option>
+                            <option value="PENDIENTE">Pendiente</option>
+                            <option value="RECHAZADA">Rechazada</option>
+                            <option value="EN_ESPERA">En espera</option>
+                            <option value="ANULADA">Anulada</option>
+                        </select>
+                        <button class="btn-recargar" id="admin-recargar">Recargar</button>
+                    </div>
+                </div>
+                <div class="recent-table-wrapper">
+                    <table class="recent-table">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Alumno</th>
+                                <th>Categoría</th>
+                                <th>Estado</th>
+                                <th>Referencia</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-body">
+                            <tr><td colspan="6" class="tabla-cargando">Cargando matrículas...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ALUMNOS -->
+            <section class="admin-view oculto" id="view-alumnos">
+                <div class="admin-header">
+                    <div>
+                        <h2>Gestión de Alumnos</h2>
+                        <p>CRUD de clientes registrados.</p>
+                    </div>
+                    <div class="admin-actions">
+                        <button class="btn-recargar" id="btn-nuevo-alumno">Nuevo Alumno</button>
+                        <button class="btn-accion" id="btn-recargar-alumnos">Recargar</button>
+                    </div>
+                </div>
+
+                <div class="admin-form-card oculto" id="form-alumno-card">
+                    <h3 id="form-alumno-title">Nuevo Alumno</h3>
+                    <form id="form-alumno" novalidate style="margin-top: 15px;">
+                        <input type="hidden" id="alumno-id">
+                        <div class="reporte-fila">
+                            <div class="campo">
+                                <label for="alumno-nombre">Nombre Completo <span class="req">*</span></label>
+                                <input type="text" id="alumno-nombre" required>
+                            </div>
+                            <div class="campo">
+                                <label for="alumno-dni">DNI <span class="req">*</span></label>
+                                <input type="text" id="alumno-dni" maxlength="20" required>
+                            </div>
+                        </div>
+                        <div class="reporte-fila">
+                            <div class="campo">
+                                <label for="alumno-fecha">Fecha de Nacimiento <span class="req">*</span></label>
+                                <input type="date" id="alumno-fecha" required>
+                            </div>
+                            <div class="campo">
+                                <label for="alumno-correo">Correo Tutor <span class="req">*</span></label>
+                                <input type="email" id="alumno-correo" required>
+                            </div>
+                        </div>
+                        <div class="reporte-fila">
+                            <div class="campo">
+                                <label for="alumno-contrasena">Contraseña</label>
+                                <input type="text" id="alumno-contrasena" placeholder="Si está vacío, se usará el DNI">
+                            </div>
+                            <div class="campo">
+                                <label for="alumno-activo">Estado</label>
+                                <select id="alumno-activo">
+                                    <option value="true">Activo</option>
+                                    <option value="false">Inactivo (Eliminación Lógica)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="admin-actions" style="margin-top: 10px;">
+                            <button type="button" class="btn-accion" id="btn-cancelar-alumno">Cancelar</button>
+                            <button type="submit" class="btn-recargar">Guardar</button>
+                        </div>
+                        <p class="login-error" id="alumno-error"></p>
+                    </form>
+                </div>
+
+                <div class="recent-table-wrapper">
+                    <table class="recent-table">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>DNI</th>
+                                <th>Nacimiento</th>
+                                <th>Correo Tutor</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="alumnos-body">
+                            <tr><td colspan="6" class="tabla-cargando">Cargando alumnos...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- CATEGORIAS -->
+            <section class="admin-view oculto" id="view-categorias">
+                <div class="admin-header">
+                    <div>
+                        <h2>Gestión de Categorías</h2>
+                        <p>CRUD de categorías de matrícula.</p>
+                    </div>
+                    <div class="admin-actions">
+                        <button class="btn-recargar" id="btn-nueva-categoria">Nueva Categoría</button>
+                        <button class="btn-accion" id="btn-recargar-categorias">Recargar</button>
+                    </div>
+                </div>
+
+                <div class="admin-form-card oculto" id="form-categoria-card">
+                    <h3 id="form-categoria-title">Nueva Categoría</h3>
+                    <form id="form-categoria" novalidate style="margin-top: 15px;">
+                        <input type="hidden" id="categoria-id">
+                        <div class="reporte-fila">
+                            <div class="campo">
+                                <label for="categoria-nombre">Nombre <span class="req">*</span></label>
+                                <input type="text" id="categoria-nombre" required>
+                            </div>
+                            <div class="campo">
+                                <label for="categoria-monto">Monto (S/) <span class="req">*</span></label>
+                                <input type="number" id="categoria-monto" step="0.01" required>
+                            </div>
+                        </div>
+                        <div class="reporte-fila">
+                            <div class="campo">
+                                <label for="categoria-edadmin">Edad Mínima <span class="req">*</span></label>
+                                <input type="number" id="categoria-edadmin" required>
+                            </div>
+                            <div class="campo">
+                                <label for="categoria-edadmax">Edad Máxima <span class="req">*</span></label>
+                                <input type="number" id="categoria-edadmax" required>
+                            </div>
+                        </div>
+                        <div class="reporte-fila">
+                            <div class="campo">
+                                <label for="categoria-cupos">Cupos Disponibles <span class="req">*</span></label>
+                                <input type="number" id="categoria-cupos" required>
+                            </div>
+                            <div class="campo">
+                                <label for="categoria-activo">Estado</label>
+                                <select id="categoria-activo">
+                                    <option value="true">Activa</option>
+                                    <option value="false">Inactiva (Eliminación Lógica)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="admin-actions" style="margin-top: 10px;">
+                            <button type="button" class="btn-accion" id="btn-cancelar-categoria">Cancelar</button>
+                            <button type="submit" class="btn-recargar">Guardar</button>
+                        </div>
+                        <p class="login-error" id="categoria-error"></p>
+                    </form>
+                </div>
+
+                <div class="recent-table-wrapper">
+                    <table class="recent-table">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Edades</th>
+                                <th>Cupos</th>
+                                <th>Monto</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="categorias-body">
+                            <tr><td colspan="6" class="tabla-cargando">Cargando categorías...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- USUARIOS -->
+            <section class="admin-view oculto" id="view-usuarios">
+                <div class="admin-header">
+                    <div>
+                        <h2>Gestión de Administradores</h2>
+                        <p>CRUD de usuarios del sistema.</p>
+                    </div>
+                    <div class="admin-actions">
+                        <button class="btn-recargar" id="btn-nuevo-usuario">Nuevo Administrador</button>
+                        <button class="btn-accion" id="btn-recargar-usuarios">Recargar</button>
+                    </div>
+                </div>
+
+                <div class="admin-form-card oculto" id="form-usuario-card">
+                    <h3 id="form-usuario-title">Nuevo Administrador</h3>
+                    <form id="form-usuario" novalidate style="margin-top: 15px;">
+                        <input type="hidden" id="usuario-id">
+                        <div class="reporte-fila">
+                            <div class="campo">
+                                <label for="usuario-nombre">Nombre <span class="req">*</span></label>
+                                <input type="text" id="usuario-nombre" required>
+                            </div>
+                            <div class="campo">
+                                <label for="usuario-username">Usuario <span class="req">*</span></label>
+                                <input type="text" id="usuario-username" required>
+                            </div>
+                        </div>
+                        <div class="reporte-fila">
+                            <div class="campo">
+                                <label for="usuario-password">Contraseña</label>
+                                <input type="text" id="usuario-password" placeholder="Obligatorio para nuevos">
+                            </div>
+                            <div class="campo">
+                                <label for="usuario-activo">Estado</label>
+                                <select id="usuario-activo">
+                                    <option value="true">Activo</option>
+                                    <option value="false">Inactivo (Eliminación Lógica)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="admin-actions" style="margin-top: 10px;">
+                            <button type="button" class="btn-accion" id="btn-cancelar-usuario">Cancelar</button>
+                            <button type="submit" class="btn-recargar">Guardar</button>
+                        </div>
+                        <p class="login-error" id="usuario-error"></p>
+                    </form>
+                </div>
+
+                <div class="recent-table-wrapper">
+                    <table class="recent-table">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Usuario</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usuarios-body">
+                            <tr><td colspan="4" class="tabla-cargando">Cargando administradores...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- REPORTES -->
+            <section class="admin-view oculto" id="view-reportes">
+                <div class="reporte-card">
+                    <h2>Reporte mensual</h2>
+                    <p>Resumen del periodo seleccionado.</p>
+                    <form id="form-admin-reporte" class="reporte-form">
+                        <div class="reporte-fila">
+                            <div class="campo">
+                                <label for="admin-reporte-anio">Año</label>
+                                <input type="number" id="admin-reporte-anio" min="2020" max="2100" placeholder="2026">
+                            </div>
+                            <div class="campo">
+                                <label for="admin-reporte-mes">Mes</label>
+                                <input type="number" id="admin-reporte-mes" min="1" max="12" placeholder="5">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-recargar">Generar reporte</button>
+                    </form>
+                    <div id="admin-reporte-resultado" class="reporte-resultado" style="margin-top: 20px;"></div>
+                </div>
+            </section>
+        </main>
     </div>
 
 <script src="js/api.js"></script>

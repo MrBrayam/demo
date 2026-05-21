@@ -33,7 +33,12 @@ public class Alumno {
     @Column(length = 100)
     private String contrasena;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private Boolean activo = true;
+
     @OneToMany(mappedBy = "alumno", cascade = CascadeType.ALL)
-    @ToString.Exclude 
+    @ToString.Exclude
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private List<Matricula> matriculas;
 }

@@ -49,6 +49,10 @@ public class MatriculaService {
         Categoria categoria = categoriaRepository.findById(request.getCategoriaId())
             .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
 
+        if (!categoria.getActivo()) {
+            throw new IllegalArgumentException("La categoría seleccionada no está activa.");
+        }
+
         if (categoria.getCuposDisponibles() <= 0) {
             throw new SinCuposException("No hay cupos disponibles. Se puede registrar en lista de espera.");
         }

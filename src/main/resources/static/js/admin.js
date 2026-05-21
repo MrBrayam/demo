@@ -13,38 +13,32 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    const btnRecargar = document.getElementById('admin-recargar');
-    if (btnRecargar) {
-        btnRecargar.addEventListener('click', cargarMatriculasAdmin);
-    }
+    // Navegacion Admin
+    initAdminNavigation();
 
-    const filtroEstado = document.getElementById('admin-estado');
-    if (filtroEstado) {
-        filtroEstado.addEventListener('change', cargarMatriculasAdmin);
-    }
+    // Matriculas
+    document.getElementById('admin-recargar')?.addEventListener('click', cargarMatriculasAdmin);
+    document.getElementById('admin-estado')?.addEventListener('change', cargarMatriculasAdmin);
+    document.getElementById('admin-body')?.addEventListener('click', async (event) => {
+        const btnAnular = event.target.closest('.btn-anular');
+        if (btnAnular) {
+            await manejarAnular(btnAnular);
+            return;
+        }
 
-    const body = document.getElementById('admin-body');
-    if (body) {
-        body.addEventListener('click', async (event) => {
-            const btnAnular = event.target.closest('.btn-anular');
-            if (btnAnular) {
-                await manejarAnular(btnAnular);
-                return;
-            }
+        const btnCambiar = event.target.closest('.btn-cambiar');
+        if (btnCambiar) {
+            await manejarCambiar(btnCambiar);
+            return;
+        }
 
-            const btnCambiar = event.target.closest('.btn-cambiar');
-            if (btnCambiar) {
-                await manejarCambiar(btnCambiar);
-                return;
-            }
+        const btnEliminar = event.target.closest('.btn-eliminar');
+        if (btnEliminar) {
+            await manejarEliminar(btnEliminar);
+        }
+    });
 
-            const btnEliminar = event.target.closest('.btn-eliminar');
-            if (btnEliminar) {
-                await manejarEliminar(btnEliminar);
-            }
-        });
-    }
-
+    // Reportes
     const formReporte = document.getElementById('form-admin-reporte');
     if (formReporte) {
         const hoy = new Date();
@@ -58,7 +52,31 @@ document.addEventListener('DOMContentLoaded', () => {
             await cargarReporteAdmin();
         });
     }
+
+    // CRUD Event Listeners
+    initCrudListeners();
 });
+
+function initAdminNavigation() {
+    const navs = document.querySelectorAll('.admin-nav[data-view]');
+    const views = document.querySelectorAll('.admin-view');
+    navs.forEach(nav => {
+        nav.addEventListener('click', () => {
+            navs.forEach(n => n.classList.remove('activo'));
+            views.forEach(v => v.classList.add('oculto'));
+            
+            nav.classList.add('activo');
+            const viewId = `view-${nav.dataset.view}`;
+            const viewEl = document.getElementById(viewId);
+            if(viewEl) viewEl.classList.remove('oculto');
+            
+            if (nav.dataset.view === 'matriculas') cargarMatriculasAdmin();
+            if (nav.dataset.view === 'alumnos') cargarAlumnosAdmin();
+            if (nav.dataset.view === 'categorias') cargarCategoriasAdmin();
+            if (nav.dataset.view === 'usuarios') cargarUsuariosAdmin();
+        });
+    });
+}
 
 async function manejarLoginAdmin() {
     const username = document.getElementById('admin-user').value.trim();
@@ -101,6 +119,10 @@ function mostrarAdmin() {
     const content = document.getElementById('admin-content');
     if (login) login.classList.add('oculto');
     if (content) content.classList.remove('oculto');
+    const userDisplay = document.getElementById('admin-user-display');
+    if(userDisplay && credencialesAdmin) {
+        userDisplay.textContent = credencialesAdmin.nombre || credencialesAdmin.username || 'Administrador';
+    }
 }
 
 async function cargarMatriculasAdmin() {
@@ -262,4 +284,302 @@ function formatearFecha(fechaStr) {
 function obtenerClaseEstado(estado) {
     if (!estado) return 'estado-pendiente';
     return `estado-${estado.toLowerCase().replace(/_/g, '-')}`;
+}
+
+// ----------------------------------------------------
+// CRUD ALUMNOS
+// ----------------------------------------------------
+function initCrudListeners() {
+    // Alumnos
+    document.getElementById('btn-recargar-alumnos')?.addEventListener('click', cargarAlumnosAdmin);
+    document.getElementById('btn-nuevo-alumno')?.addEventListener('click', () => {
+        document.getElementById('form-alumno').reset();
+        document.getElementById('alumno-id').value = '';
+        document.getElementById('form-alumno-title').textContent = 'Nuevo Alumno';
+        document.getElementById('form-alumno-card').classList.remove('oculto');
+    });
+    document.getElementById('btn-cancelar-alumno')?.addEventListener('click', () => {
+        document.getElementById('form-alumno-card').classList.add('oculto');
+    });
+    document.getElementById('form-alumno')?.addEventListener('submit', guardarAlumno);
+    document.getElementById('alumnos-body')?.addEventListener('click', (e) => {
+        const btnEditar = e.target.closest('.btn-editar-alumno');
+        if (btnEditar) editarAlumno(btnEditar.dataset.id);
+        const btnEliminar = e.target.closest('.btn-eliminar-alumno');
+        if (btnEliminar) eliminarAlumno(btnEliminar.dataset.id);
+    });
+
+    // Categorias
+    document.getElementById('btn-recargar-categorias')?.addEventListener('click', cargarCategoriasAdmin);
+    document.getElementById('btn-nueva-categoria')?.addEventListener('click', () => {
+        document.getElementById('form-categoria').reset();
+        document.getElementById('categoria-id').value = '';
+        document.getElementById('form-categoria-title').textContent = 'Nueva Categoría';
+        document.getElementById('form-categoria-card').classList.remove('oculto');
+    });
+    document.getElementById('btn-cancelar-categoria')?.addEventListener('click', () => {
+        document.getElementById('form-categoria-card').classList.add('oculto');
+    });
+    document.getElementById('form-categoria')?.addEventListener('submit', guardarCategoria);
+    document.getElementById('categorias-body')?.addEventListener('click', (e) => {
+        const btnEditar = e.target.closest('.btn-editar-categoria');
+        if (btnEditar) editarCategoria(btnEditar.dataset.id);
+        const btnEliminar = e.target.closest('.btn-eliminar-categoria');
+        if (btnEliminar) eliminarCategoria(btnEliminar.dataset.id);
+    });
+
+    // Usuarios
+    document.getElementById('btn-recargar-usuarios')?.addEventListener('click', cargarUsuariosAdmin);
+    document.getElementById('btn-nuevo-usuario')?.addEventListener('click', () => {
+        document.getElementById('form-usuario').reset();
+        document.getElementById('usuario-id').value = '';
+        document.getElementById('form-usuario-title').textContent = 'Nuevo Administrador';
+        document.getElementById('form-usuario-card').classList.remove('oculto');
+    });
+    document.getElementById('btn-cancelar-usuario')?.addEventListener('click', () => {
+        document.getElementById('form-usuario-card').classList.add('oculto');
+    });
+    document.getElementById('form-usuario')?.addEventListener('submit', guardarUsuario);
+    document.getElementById('usuarios-body')?.addEventListener('click', (e) => {
+        const btnEditar = e.target.closest('.btn-editar-usuario');
+        if (btnEditar) editarUsuario(btnEditar.dataset.id);
+        const btnEliminar = e.target.closest('.btn-eliminar-usuario');
+        if (btnEliminar) eliminarUsuario(btnEliminar.dataset.id);
+    });
+}
+
+let alumnosList = [];
+let categoriasList = [];
+let usuariosList = [];
+
+// -- ALUMNOS
+async function cargarAlumnosAdmin() {
+    if (!credencialesAdmin) return;
+    const tbody = document.getElementById('alumnos-body');
+    if (!tbody) return;
+    tbody.innerHTML = '<tr><td colspan="6" class="tabla-cargando">Cargando...</td></tr>';
+    try {
+        alumnosList = await obtenerAlumnosAdmin(credencialesAdmin);
+        if (!alumnosList.length) {
+            tbody.innerHTML = '<tr><td colspan="6" class="tabla-cargando">No hay alumnos registrados.</td></tr>';
+            return;
+        }
+        tbody.innerHTML = alumnosList.map(a => `
+            <tr>
+                <td>${a.nombreCompleto}</td>
+                <td>${a.dni}</td>
+                <td>${a.fechaNacimiento}</td>
+                <td>${a.correoTutor}</td>
+                <td>${a.activo ? '<span style="color:green;font-weight:bold;">Activo</span>' : '<span style="color:red;">Inactivo</span>'}</td>
+                <td>
+                    <button class="btn-accion btn-editar-alumno" data-id="${a.id}">Editar</button>
+                    <button class="btn-accion btn-eliminar-alumno" data-id="${a.id}">Eliminar</button>
+                </td>
+            </tr>
+        `).join('');
+    } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="6" class="tabla-cargando">Error: ${e.message}</td></tr>`;
+    }
+}
+
+async function guardarAlumno(e) {
+    e.preventDefault();
+    const errorEl = document.getElementById('alumno-error');
+    errorEl.textContent = '';
+    const id = document.getElementById('alumno-id').value;
+    const datos = {
+        nombreCompleto: document.getElementById('alumno-nombre').value,
+        dni: document.getElementById('alumno-dni').value,
+        fechaNacimiento: document.getElementById('alumno-fecha').value,
+        correoTutor: document.getElementById('alumno-correo').value,
+        contrasena: document.getElementById('alumno-contrasena').value || null,
+        activo: document.getElementById('alumno-activo').value === 'true'
+    };
+    try {
+        await guardarAlumnoAdmin(credencialesAdmin, datos, id);
+        document.getElementById('form-alumno-card').classList.add('oculto');
+        await cargarAlumnosAdmin();
+    } catch (err) {
+        errorEl.textContent = err.message;
+    }
+}
+
+function editarAlumno(idStr) {
+    const id = Number(idStr);
+    const alumno = alumnosList.find(a => a.id === id);
+    if (!alumno) return;
+    document.getElementById('alumno-id').value = alumno.id;
+    document.getElementById('alumno-nombre').value = alumno.nombreCompleto;
+    document.getElementById('alumno-dni').value = alumno.dni;
+    document.getElementById('alumno-fecha').value = alumno.fechaNacimiento;
+    document.getElementById('alumno-correo').value = alumno.correoTutor;
+    document.getElementById('alumno-contrasena').value = '';
+    document.getElementById('alumno-activo').value = alumno.activo ? 'true' : 'false';
+    document.getElementById('form-alumno-title').textContent = 'Editar Alumno';
+    document.getElementById('form-alumno-card').classList.remove('oculto');
+}
+
+async function eliminarAlumno(idStr) {
+    if (!confirm('¿Deseas eliminar este alumno? (Verificará restricciones)')) return;
+    try {
+        await eliminarAlumnoAdmin(credencialesAdmin, Number(idStr));
+        await cargarAlumnosAdmin();
+    } catch (err) {
+        alert(err.message);
+    }
+}
+
+// -- CATEGORIAS
+async function cargarCategoriasAdmin() {
+    if (!credencialesAdmin) return;
+    const tbody = document.getElementById('categorias-body');
+    if (!tbody) return;
+    tbody.innerHTML = '<tr><td colspan="6" class="tabla-cargando">Cargando...</td></tr>';
+    try {
+        categoriasList = await obtenerCategoriasAdmin(credencialesAdmin);
+        if (!categoriasList.length) {
+            tbody.innerHTML = '<tr><td colspan="6" class="tabla-cargando">No hay categorías.</td></tr>';
+            return;
+        }
+        tbody.innerHTML = categoriasList.map(c => `
+            <tr>
+                <td>${c.nombre}</td>
+                <td>${c.edadMinima} - ${c.edadMaxima} años</td>
+                <td>${c.cuposDisponibles}</td>
+                <td>S/ ${c.monto.toFixed(2)}</td>
+                <td>${c.activo ? '<span style="color:green;font-weight:bold;">Activa</span>' : '<span style="color:red;">Inactiva</span>'}</td>
+                <td>
+                    <button class="btn-accion btn-editar-categoria" data-id="${c.id}">Editar</button>
+                    <button class="btn-accion btn-eliminar-categoria" data-id="${c.id}">Eliminar</button>
+                </td>
+            </tr>
+        `).join('');
+    } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="6" class="tabla-cargando">Error: ${e.message}</td></tr>`;
+    }
+}
+
+async function guardarCategoria(e) {
+    e.preventDefault();
+    const errorEl = document.getElementById('categoria-error');
+    errorEl.textContent = '';
+    const id = document.getElementById('categoria-id').value;
+    const datos = {
+        nombre: document.getElementById('categoria-nombre').value,
+        monto: parseFloat(document.getElementById('categoria-monto').value),
+        edadMinima: parseInt(document.getElementById('categoria-edadmin').value),
+        edadMaxima: parseInt(document.getElementById('categoria-edadmax').value),
+        cuposDisponibles: parseInt(document.getElementById('categoria-cupos').value),
+        activo: document.getElementById('categoria-activo').value === 'true'
+    };
+    try {
+        await guardarCategoriaAdmin(credencialesAdmin, datos, id);
+        document.getElementById('form-categoria-card').classList.add('oculto');
+        await cargarCategoriasAdmin();
+    } catch (err) {
+        errorEl.textContent = err.message;
+    }
+}
+
+function editarCategoria(idStr) {
+    const id = Number(idStr);
+    const cat = categoriasList.find(c => c.id === id);
+    if (!cat) return;
+    document.getElementById('categoria-id').value = cat.id;
+    document.getElementById('categoria-nombre').value = cat.nombre;
+    document.getElementById('categoria-monto').value = cat.monto;
+    document.getElementById('categoria-edadmin').value = cat.edadMinima;
+    document.getElementById('categoria-edadmax').value = cat.edadMaxima;
+    document.getElementById('categoria-cupos').value = cat.cuposDisponibles;
+    document.getElementById('categoria-activo').value = cat.activo ? 'true' : 'false';
+    document.getElementById('form-categoria-title').textContent = 'Editar Categoría';
+    document.getElementById('form-categoria-card').classList.remove('oculto');
+}
+
+async function eliminarCategoria(idStr) {
+    if (!confirm('¿Deseas eliminar esta categoría?')) return;
+    try {
+        await eliminarCategoriaAdmin(credencialesAdmin, Number(idStr));
+        await cargarCategoriasAdmin();
+    } catch (err) {
+        alert(err.message);
+    }
+}
+
+// -- USUARIOS
+async function cargarUsuariosAdmin() {
+    if (!credencialesAdmin) return;
+    const tbody = document.getElementById('usuarios-body');
+    if (!tbody) return;
+    tbody.innerHTML = '<tr><td colspan="4" class="tabla-cargando">Cargando...</td></tr>';
+    try {
+        usuariosList = await obtenerUsuariosAdmin(credencialesAdmin);
+        if (!usuariosList.length) {
+            tbody.innerHTML = '<tr><td colspan="4" class="tabla-cargando">No hay administradores.</td></tr>';
+            return;
+        }
+        tbody.innerHTML = usuariosList.map(u => `
+            <tr>
+                <td>${u.nombre}</td>
+                <td>${u.username}</td>
+                <td>${u.activo ? '<span style="color:green;font-weight:bold;">Activo</span>' : '<span style="color:red;">Inactivo</span>'}</td>
+                <td>
+                    <button class="btn-accion btn-editar-usuario" data-id="${u.id}">Editar</button>
+                    <button class="btn-accion btn-eliminar-usuario" data-id="${u.id}">Eliminar</button>
+                </td>
+            </tr>
+        `).join('');
+    } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="4" class="tabla-cargando">Error: ${e.message}</td></tr>`;
+    }
+}
+
+async function guardarUsuario(e) {
+    e.preventDefault();
+    const errorEl = document.getElementById('usuario-error');
+    errorEl.textContent = '';
+    const id = document.getElementById('usuario-id').value;
+    const pwd = document.getElementById('usuario-password').value;
+    
+    if (!id && !pwd) {
+        errorEl.textContent = 'La contraseña es obligatoria para nuevos usuarios.';
+        return;
+    }
+
+    const datos = {
+        nombre: document.getElementById('usuario-nombre').value,
+        username: document.getElementById('usuario-username').value,
+        password: pwd || null,
+        activo: document.getElementById('usuario-activo').value === 'true'
+    };
+    try {
+        await guardarUsuarioAdmin(credencialesAdmin, datos, id);
+        document.getElementById('form-usuario-card').classList.add('oculto');
+        await cargarUsuariosAdmin();
+    } catch (err) {
+        errorEl.textContent = err.message;
+    }
+}
+
+function editarUsuario(idStr) {
+    const id = Number(idStr);
+    const u = usuariosList.find(x => x.id === id);
+    if (!u) return;
+    document.getElementById('usuario-id').value = u.id;
+    document.getElementById('usuario-nombre').value = u.nombre;
+    document.getElementById('usuario-username').value = u.username;
+    document.getElementById('usuario-password').value = '';
+    document.getElementById('usuario-activo').value = u.activo ? 'true' : 'false';
+    document.getElementById('form-usuario-title').textContent = 'Editar Administrador';
+    document.getElementById('form-usuario-card').classList.remove('oculto');
+}
+
+async function eliminarUsuario(idStr) {
+    if (!confirm('¿Deseas eliminar este administrador?')) return;
+    try {
+        await eliminarUsuarioAdmin(credencialesAdmin, Number(idStr));
+        await cargarUsuariosAdmin();
+    } catch (err) {
+        alert(err.message);
+    }
 }

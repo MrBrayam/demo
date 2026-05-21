@@ -243,3 +243,138 @@ async function verificarAlumno(datos) {
         throw new Error('Error al verificar o crear el alumno. Comprueba los datos.');
     }
 }
+
+// --- CRUD ALUMNOS ---
+async function obtenerAlumnosAdmin(credenciales) {
+    const response = await fetch(`${API_BASE}/admin/alumnos`, {
+        headers: {
+            'X-Admin-User': credenciales.username,
+            'X-Admin-Pass': credenciales.password
+        }
+    });
+    if (!response.ok) throw new Error('No se pudieron cargar los alumnos.');
+    return response.json();
+}
+
+async function guardarAlumnoAdmin(credenciales, datos, id) {
+    const url = id ? `${API_BASE}/admin/alumnos/${id}` : `${API_BASE}/admin/alumnos`;
+    const method = id ? 'PUT' : 'POST';
+    const response = await fetch(url, {
+        method: method,
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Admin-User': credenciales.username,
+            'X-Admin-Pass': credenciales.password
+        },
+        body: JSON.stringify(datos)
+    });
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || 'Error al guardar el alumno.');
+    }
+    return response.json();
+}
+
+async function eliminarAlumnoAdmin(credenciales, id) {
+    const response = await fetch(`${API_BASE}/admin/alumnos/${id}`, {
+        method: 'DELETE',
+        headers: {
+            'X-Admin-User': credenciales.username,
+            'X-Admin-Pass': credenciales.password
+        }
+    });
+    if (!response.ok && response.status !== 204) {
+        const errorText = await response.text();
+        throw new Error(errorText || 'Error al eliminar el alumno.');
+    }
+}
+
+// --- CRUD CATEGORIAS ---
+async function obtenerCategoriasAdmin(credenciales) {
+    const response = await fetch(`${API_BASE}/admin/categorias`, {
+        headers: {
+            'X-Admin-User': credenciales.username,
+            'X-Admin-Pass': credenciales.password
+        }
+    });
+    if (!response.ok) throw new Error('No se pudieron cargar las categorías.');
+    return response.json();
+}
+
+async function guardarCategoriaAdmin(credenciales, datos, id) {
+    const url = id ? `${API_BASE}/admin/categorias/${id}` : `${API_BASE}/admin/categorias`;
+    const method = id ? 'PUT' : 'POST';
+    const response = await fetch(url, {
+        method: method,
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Admin-User': credenciales.username,
+            'X-Admin-Pass': credenciales.password
+        },
+        body: JSON.stringify(datos)
+    });
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || 'Error al guardar la categoría.');
+    }
+    return response.json();
+}
+
+async function eliminarCategoriaAdmin(credenciales, id) {
+    const response = await fetch(`${API_BASE}/admin/categorias/${id}`, {
+        method: 'DELETE',
+        headers: {
+            'X-Admin-User': credenciales.username,
+            'X-Admin-Pass': credenciales.password
+        }
+    });
+    if (!response.ok && response.status !== 204) {
+        const errorText = await response.text();
+        throw new Error(errorText || 'Error al eliminar la categoría.');
+    }
+}
+
+// --- CRUD USUARIOS ---
+async function obtenerUsuariosAdmin(credenciales) {
+    const response = await fetch(`${API_BASE}/admin/usuarios`, {
+        headers: {
+            'X-Admin-User': credenciales.username,
+            'X-Admin-Pass': credenciales.password
+        }
+    });
+    if (!response.ok) throw new Error('No se pudieron cargar los usuarios.');
+    return response.json();
+}
+
+async function guardarUsuarioAdmin(credenciales, datos, id) {
+    const url = id ? `${API_BASE}/admin/usuarios/${id}` : `${API_BASE}/admin/usuarios`;
+    const method = id ? 'PUT' : 'POST';
+    const response = await fetch(url, {
+        method: method,
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Admin-User': credenciales.username,
+            'X-Admin-Pass': credenciales.password
+        },
+        body: JSON.stringify(datos)
+    });
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || 'Error al guardar el usuario.');
+    }
+    return response.json();
+}
+
+async function eliminarUsuarioAdmin(credenciales, id) {
+    const response = await fetch(`${API_BASE}/admin/usuarios/${id}`, {
+        method: 'DELETE',
+        headers: {
+            'X-Admin-User': credenciales.username,
+            'X-Admin-Pass': credenciales.password
+        }
+    });
+    if (!response.ok && response.status !== 204) {
+        const errorText = await response.text();
+        throw new Error(errorText || 'Error al eliminar el usuario.');
+    }
+}

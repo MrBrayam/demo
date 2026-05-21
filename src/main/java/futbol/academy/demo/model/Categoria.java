@@ -31,4 +31,8 @@ public class Categoria {
 
     @Column(nullable = false)
     private BigDecimal montoMatricula;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private Boolean activo = true;
 }
