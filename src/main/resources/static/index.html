@@ -4,34 +4,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Portal de acceso para clientes y administradores de la Academia de Fútbol.">
-    <title>Academia de Fútbol</title>
+    <meta name="description" content="Portal de acceso para alumnos y administradores de la Academia de Futbol.">
+    <title>Academia de Futbol</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Newsreader:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
 </head>
 
-<body>
+<body class="theme-landing">
 
     <header class="global-header">
         <div class="global-header-inner">
             <span class="global-logo">AF</span>
             <div>
-                <h1 class="global-title">Academia de Fútbol</h1>
+                <div class="global-kicker">Academia de Futbol</div>
+                <h1 class="global-title">Matriculas y formacion</h1>
             </div>
         </div>
     </header>
 
-    <main class="landing">
-        <div class="landing-card">
-            <h2>Cliente</h2>
-            <p>Registra matrículas, revisa tu historial y paga tus pendientes de manera segura.</p>
-            <a class="btn-link" href="cliente.html">Ir al portal de cliente</a>
+    <section class="hero landing-hero">
+        <div class="hero-content reveal">
+            <h2>Formacion deportiva con disciplina y metodo</h2>
+            <p>Accede a tu area de alumno o al panel administrativo. Todo el proceso de matricula, pagos y reportes en un solo lugar.</p>
+            <div class="hero-actions">
+                <a class="btn-link gold" href="cliente.html">Portal de Alumno</a>
+                <a class="btn-link secondary" href="admin.html">Portal de Administrador</a>
+            </div>
         </div>
-        <div class="landing-card">
+        <div class="hero-card reveal delay-1">
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <span>Temporada</span>
+                    <strong>2026</strong>
+                </div>
+                <div class="stat-card">
+                    <span>Modalidad</span>
+                    <strong>Presencial</strong>
+                </div>
+                <div class="stat-card">
+                    <span>Gestion</span>
+                    <strong>Centralizada</strong>
+                </div>
+            </div>
+            <p style="margin-top: 14px; color: var(--ink-700);">Consulta tu estado, realiza pagos y descarga comprobantes sin perder tiempo en procesos manuales.</p>
+        </div>
+    </section>
+
+    <main class="landing">
+        <div class="landing-card reveal">
+            <h2>Alumno</h2>
+            <p>Consulta tu historial de matriculas, paga pendientes y descarga comprobantes desde un solo panel.</p>
+            <a class="btn-link" href="cliente.html">Ir al portal de alumno</a>
+        </div>
+        <div class="landing-card reveal delay-1">
             <h2>Administrador</h2>
-            <p>Gestiona matrículas, actualiza estados y genera reportes detallados.</p>
+            <p>Gestiona matriculas, alumnos, categorias y reportes con informacion consolidada en tiempo real.</p>
             <a class="btn-link" href="admin.html">Ir al portal de administrador</a>
         </div>
     </main>

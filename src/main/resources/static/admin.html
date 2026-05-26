@@ -7,22 +7,55 @@
     <title>Administrador — Matriculas</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Newsreader:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
 </head>
-<body>
+<body class="theme-admin">
 
     <header class="global-header">
         <div class="global-header-inner">
             <span class="global-logo">AF</span>
             <div>
-                <h1 class="global-title">Portal del Administrador</h1>
+                <div class="global-kicker">Area administrativa</div>
+                <h1 class="global-title">Portal del administrador</h1>
             </div>
         </div>
     </header>
 
+    <section class="role-hero role-hero--admin">
+        <div class="role-hero-inner">
+            <div class="role-hero-content">
+                <div class="role-kicker">Administrador</div>
+                <h2>Control completo de matriculas</h2>
+                <p>Gestiona matriculas, alumnos, categorias y reportes en un panel consolidado.</p>
+                <ul class="role-list">
+                    <li>Visualizacion de estados y referencias en tiempo real.</li>
+                    <li>Administracion de alumnos y categorias activas.</li>
+                    <li>Reportes mensuales con indicadores clave.</li>
+                </ul>
+            </div>
+            <div class="role-hero-card">
+                <div class="stat-grid">
+                    <div class="stat-card">
+                        <span>Gestion</span>
+                        <strong>Central</strong>
+                    </div>
+                    <div class="stat-card">
+                        <span>Reportes</span>
+                        <strong>Mensuales</strong>
+                    </div>
+                    <div class="stat-card">
+                        <span>Accesos</span>
+                        <strong>Restringidos</strong>
+                    </div>
+                </div>
+                <p style="margin-top: 14px; color: var(--ink-700);">Ingresa con tu usuario y contrasena para operar el sistema.</p>
+            </div>
+        </div>
+    </section>
+
     <section class="login-panel" id="admin-login">
-        <div class="login-card">
+        <div class="login-card reveal delay-1">
             <h2>Inicio de sesion</h2>
             <p>Acceso exclusivo para administradores.</p>
             <form id="form-admin-login" novalidate>
@@ -43,24 +76,44 @@
     <div id="admin-content" class="admin-layout oculto">
         <aside class="admin-sidebar">
             <div class="cliente-user" id="admin-user-display">Administrador</div>
-            <button class="admin-nav activo" data-view="matriculas">Matrículas</button>
+            <button class="admin-nav activo" data-view="matriculas">Matriculas</button>
             <button class="admin-nav" data-view="alumnos">Clientes (Alumnos)</button>
-            <button class="admin-nav" data-view="categorias">Categorías</button>
+            <button class="admin-nav" data-view="categorias">Categorias</button>
             <button class="admin-nav" data-view="usuarios">Administradores</button>
             <button class="admin-nav" data-view="reportes">Reportes</button>
-            <a href="admin.html" class="btn-link" style="margin-top: auto; text-align: center;">Cerrar sesión</a>
+            <a href="admin.html" class="btn-link secondary" style="margin-top: auto; text-align: center;">Cerrar sesion</a>
         </aside>
 
         <main class="cliente-content">
-            <!-- MATRICULAS -->
+            <section class="dashboard-intro">
+                <div class="hero-card reveal">
+                    <h2 style="margin-bottom: 6px;">Panel de control</h2>
+                    <p style="color: var(--ink-700);">Selecciona una vista para gestionar matriculas, alumnos, categorias o reportes.</p>
+                    <div class="stat-grid" style="margin-top: 12px;">
+                        <div class="stat-card">
+                            <span>Matriculas</span>
+                            <strong>Gestion</strong>
+                        </div>
+                        <div class="stat-card">
+                            <span>Alumnos</span>
+                            <strong>Control</strong>
+                        </div>
+                        <div class="stat-card">
+                            <span>Reportes</span>
+                            <strong>Mensual</strong>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <section class="admin-view" id="view-matriculas">
                 <div class="admin-header">
                     <div>
-                        <h2>Gestión de matrículas</h2>
-                        <p>CRUD de matrículas registradas.</p>
+                        <h2>Gestion de matriculas</h2>
+                        <p>CRUD de matriculas registradas.</p>
                     </div>
                     <div class="admin-actions">
-                        <button class="btn-recargar" id="btn-nueva-matricula">Nueva Matrícula</button>
+                        <button class="btn-recargar" id="btn-nueva-matricula">Nueva Matricula</button>
                         <select id="admin-estado">
                             <option value="">Todos</option>
                             <option value="CONFIRMADA">Confirmada</option>
@@ -358,6 +411,7 @@
         </main>
     </div>
 
+<script src="js/utils.js"></script>
 <script src="js/api.js"></script>
 <script src="js/admin.js"></script>
 </body>

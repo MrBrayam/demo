@@ -3,37 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Portal del cliente para matrículas y pagos.">
-    <title>Cliente — Portal de Matrículas</title>
+    <meta name="description" content="Portal del alumno para matriculas y pagos.">
+    <title>Alumno — Portal de Matriculas</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Newsreader:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
 </head>
-<body>
+<body class="theme-client">
 
     <header class="global-header">
         <div class="global-header-inner">
             <span class="global-logo">AF</span>
             <div>
-                <h1 class="global-title">Portal del Cliente</h1>
+                <div class="global-kicker">Area de alumnos</div>
+                <h1 class="global-title">Portal del alumno</h1>
             </div>
         </div>
     </header>
 
-    <!-- Login Panel -->
+    <section class="role-hero role-hero--cliente">
+        <div class="role-hero-inner">
+            <div class="role-hero-content">
+                <div class="role-kicker">Alumno</div>
+                <h2>Gestion de pagos y matriculas</h2>
+                <p>Consulta el estado de tus matriculas, completa pagos pendientes y descarga comprobantes.</p>
+                <ul class="role-list">
+                    <li>Estado actualizado de pagos y matriculas.</li>
+                    <li>Acceso rapido a historiales y comprobantes.</li>
+                    <li>Seguimiento de referencias y constancias.</li>
+                </ul>
+            </div>
+            <div class="role-hero-card">
+                <div class="stat-grid">
+                    <div class="stat-card">
+                        <span>Soporte</span>
+                        <strong>Academia</strong>
+                    </div>
+                    <div class="stat-card">
+                        <span>Disponibilidad</span>
+                        <strong>24/7</strong>
+                    </div>
+                    <div class="stat-card">
+                        <span>Seguridad</span>
+                        <strong>Verificada</strong>
+                    </div>
+                </div>
+                <p style="margin-top: 14px; color: var(--ink-700);">Ingresa con tu DNI y contrasena para activar tu panel personalizado.</p>
+            </div>
+        </div>
+    </section>
+
     <section class="login-panel" id="cliente-login">
-        <div class="login-card">
-            <h2>Inicio de sesión</h2>
-            <p>Ingresa con tu DNI y contraseña.</p>
+        <div class="login-card reveal delay-1">
+            <h2>Inicio de sesion</h2>
+            <p>Ingresa con tu DNI y contrasena.</p>
             <form id="form-cliente-login" novalidate>
                 <div class="campo">
                     <label for="login-dni">DNI</label>
                     <input type="text" id="login-dni" placeholder="DNI" autocomplete="username" maxlength="8">
                 </div>
                 <div class="campo">
-                    <label for="login-pass">Contraseña</label>
-                    <input type="password" id="login-pass" placeholder="Contraseña" autocomplete="current-password">
+                    <label for="login-pass">Contrasena</label>
+                    <input type="password" id="login-pass" placeholder="Contrasena" autocomplete="current-password">
                 </div>
                 <p class="login-error" id="login-error"></p>
                 <button type="submit" class="btn-login" id="btn-login">Ingresar</button>
@@ -41,57 +73,73 @@
         </div>
     </section>
 
-    <!-- Dashboard App Panel -->
     <div id="cliente-app" class="cliente-layout oculto">
-        <!-- Sidebar Navigation -->
         <aside class="cliente-sidebar">
             <div class="cliente-user" id="cliente-user">Cliente DNI</div>
             <button class="cliente-nav activo" data-view="pagos">Pagos pendientes</button>
-            <button class="cliente-nav" data-view="historial">Historial de matrículas</button>
-            <a href="cliente.html" class="btn-link" style="margin-top: auto; text-align: center;">Cerrar sesión</a>
+            <button class="cliente-nav" data-view="historial">Historial de matriculas</button>
+            <a href="cliente.html" class="btn-link secondary" style="margin-top: auto; text-align: center;">Cerrar sesion</a>
         </aside>
 
-        <!-- Main Content Area -->
         <main class="cliente-content">
-            
-            <!-- Pending Payments View -->
+            <section class="dashboard-intro">
+                <div class="hero-card reveal">
+                    <h2 style="margin-bottom: 6px;">Tu panel de alumno</h2>
+                    <p style="color: var(--ink-700);">Selecciona una matricula pendiente para completar el pago o revisa el historial completo.</p>
+                    <div class="stat-grid" style="margin-top: 12px;">
+                        <div class="stat-card">
+                            <span>Pagos pendientes</span>
+                            <strong>Seguimiento</strong>
+                        </div>
+                        <div class="stat-card">
+                            <span>Historial</span>
+                            <strong>Completo</strong>
+                        </div>
+                        <div class="stat-card">
+                            <span>Comprobantes</span>
+                            <strong>Descarga</strong>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <section class="pagos-panel" id="cliente-pagos">
                 <div class="recent-header">
                     <h2>Pagos pendientes</h2>
-                    <p>Selecciona una matrícula pendiente y completa el pago con tu tarjeta.</p>
+                    <p>Selecciona una matricula pendiente y completa el pago con tu tarjeta.</p>
                 </div>
 
                 <div class="pago-grid">
-                    <!-- Left side: Pending list -->
                     <div class="pago-card">
                         <div class="recent-table-wrapper">
                             <table class="recent-table">
                                 <thead>
                                     <tr>
                                         <th>Fecha</th>
-                                        <th>Categoría</th>
+                                        <th>Categoria</th>
                                         <th>Monto</th>
                                         <th>Estado</th>
-                                        <th>Acción</th>
+                                        <th>Accion</th>
                                     </tr>
                                 </thead>
                                 <tbody id="pendientes-body">
-                                    <tr><td colspan="5" class="tabla-cargando">Cargando pendientes...</td></tr>
+                                    <tr>
+                                        <td colspan="5" class="tabla-cargando">Cargando pendientes...</td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
 
-                    <!-- Right side: Payment Gateway Form -->
                     <div class="pago-card">
                         <h3 class="pago-subtitulo">Detalle del pago</h3>
                         <div class="pago-resumen">
                             <div>
-                                <span>Matrícula ID</span>
+                                <span>Matricula ID</span>
                                 <strong id="pago-id">-</strong>
                             </div>
                             <div>
-                                <span>Categoría</span>
+                                <span>Categoria</span>
                                 <strong id="pago-categoria">-</strong>
                             </div>
                             <div>
@@ -110,7 +158,7 @@
 
                         <form id="form-pago-tarjeta" style="margin-top: 15px;" novalidate>
                             <div class="campo">
-                                <label for="tarjeta-numero">Número de tarjeta <span class="req">*</span></label>
+                                <label for="tarjeta-numero">Numero de tarjeta <span class="req">*</span></label>
                                 <input type="text" id="tarjeta-numero" placeholder="4000 0000 0000 0000" maxlength="19" disabled>
                                 <span class="error" id="error-tarjeta-numero"></span>
                             </div>
@@ -125,10 +173,6 @@
                                 <span class="error" id="error-tarjeta-cvv"></span>
                             </div>
 
-                            <p style="font-size: 11px; color: var(--gray-600); margin-bottom: 12px; font-style: italic;">
-                                * Para simular un pago fallido, ingrese <strong>tok_reject_test</strong> como número de tarjeta.
-                            </p>
-
                             <div class="panel-actions mt-auto">
                                 <button type="submit" class="btn-pagar" id="btn-pagar-pendiente" disabled>
                                     Procesar pago
@@ -141,26 +185,27 @@
                 </div>
             </section>
 
-            <!-- Complete Enrollment History View -->
             <section class="historial-panel oculto" id="cliente-historial">
                 <div class="recent-header">
-                    <h2>Historial de matrículas</h2>
-                    <p>Consulta el estado de todas tus matrículas y descarga los recibos.</p>
+                    <h2>Historial de matriculas</h2>
+                    <p>Consulta el estado de todas tus matriculas y descarga los recibos.</p>
                 </div>
                 <div class="recent-table-wrapper">
                     <table class="recent-table">
                         <thead>
                             <tr>
                                 <th>Fecha</th>
-                                <th>Categoría</th>
+                                <th>Categoria</th>
                                 <th>Monto</th>
                                 <th>Estado</th>
                                 <th>Referencia</th>
-                                <th>Acción</th>
+                                <th>Accion</th>
                             </tr>
                         </thead>
                         <tbody id="historial-body">
-                            <tr><td colspan="6" class="tabla-cargando">Cargando historial...</td></tr>
+                            <tr>
+                                <td colspan="6" class="tabla-cargando">Cargando historial...</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -169,7 +214,9 @@
         </main>
     </div>
 
-<script src="js/api.js"></script>
-<script src="js/cliente.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/cliente.js"></script>
 </body>
+
 </html>
