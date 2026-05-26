@@ -1,7 +1,8 @@
 let credencialesAdmin = null;
 
 const adminState = {
-    matriculas: []
+    matriculas: [],
+    reporte: null
 };
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -80,6 +81,8 @@ document.addEventListener('DOMContentLoaded', () => {
             await cargarReporteAdmin();
         });
     }
+
+    document.getElementById('btn-exportar-reporte')?.addEventListener('click', exportarReporteTxt);
 
     // CRUD Event Listeners
     initCrudListeners();
@@ -266,15 +269,26 @@ async function cargarReporteAdmin() {
     const anio = Number(document.getElementById('admin-reporte-anio').value);
     const mes = Number(document.getElementById('admin-reporte-mes').value);
     const resultado = document.getElementById('admin-reporte-resultado');
+    const btnExportar = document.getElementById('btn-exportar-reporte');
     if (!resultado) return;
 
     resultado.textContent = 'Generando reporte...';
+    if (btnExportar) btnExportar.disabled = true;
 
     try {
         const data = await obtenerReporteMensualAdmin(credencialesAdmin, anio, mes);
+        adminState.reporte = {
+            ...data,
+            anio,
+            mes
+        };
         resultado.innerHTML = renderReporteMensual(data);
+        renderReporteBarras(data);
+        if (btnExportar) btnExportar.disabled = false;
     } catch (error) {
         resultado.textContent = 'Error al generar el reporte.';
+        renderReporteBarras(null);
+        if (btnExportar) btnExportar.disabled = true;
     }
 }
 
@@ -311,6 +325,69 @@ function renderReporteMensual(data) {
             </div>
         </div>
     `;
+}
+
+function renderReporteBarras(data) {
+    const contenedor = document.getElementById('admin-reporte-chart');
+    if (!contenedor) return;
+
+    if (!data) {
+        contenedor.innerHTML = '<p class="tabla-cargando">Sin datos para el grafico.</p>';
+        return;
+    }
+
+    const valores = [
+        { label: 'Total', value: data.totalMatriculas || 0 },
+        { label: 'Confirmadas', value: data.confirmadas || 0 },
+        { label: 'Pendientes', value: data.pendientes || 0 },
+        { label: 'Rechazadas', value: data.rechazadas || 0 },
+        { label: 'Anuladas', value: data.anuladas || 0 }
+    ];
+
+    const max = Math.max(...valores.map(item => item.value), 1);
+    contenedor.innerHTML = valores.map(item => {
+        const porcentaje = Math.round((item.value / max) * 100);
+        return `
+            <div class="reporte-bar">
+                <span class="reporte-bar-label">${item.label}</span>
+                <div class="reporte-bar-track">
+                    <div class="reporte-bar-fill" style="width: ${porcentaje}%;"></div>
+                </div>
+                <span class="reporte-bar-value">${item.value}</span>
+            </div>
+        `;
+    }).join('');
+}
+
+function exportarReporteTxt() {
+    if (!adminState.reporte) {
+        alert('Genera un reporte antes de exportar.');
+        return;
+    }
+
+    const data = adminState.reporte;
+    const monto = data.montoConfirmado != null
+        ? `S/ ${Number(data.montoConfirmado).toFixed(2)}`
+        : 'S/ 0.00';
+    const periodo = `${String(data.mes).padStart(2, '0')}/${data.anio}`;
+    const contenido = `REPORTE MENSUAL - ACADEMIA DE FUTBOL\n` +
+        `Periodo: ${periodo}\n` +
+        `Total matriculas: ${data.totalMatriculas}\n` +
+        `Confirmadas: ${data.confirmadas}\n` +
+        `Pendientes: ${data.pendientes}\n` +
+        `Rechazadas: ${data.rechazadas}\n` +
+        `Anuladas: ${data.anuladas}\n` +
+        `Monto confirmado: ${monto}\n`;
+
+    const blob = new Blob([contenido], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Reporte_${periodo.replace('/', '-')}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
 }
 
 // ----------------------------------------------------
