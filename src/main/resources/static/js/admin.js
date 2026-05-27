@@ -5,6 +5,14 @@ const adminState = {
     reporte: null
 };
 
+const PAGE_SIZE = 6;
+const adminPagination = {
+    matriculas: 1,
+    alumnos: 1,
+    categorias: 1,
+    usuarios: 1
+};
+
 document.addEventListener('DOMContentLoaded', () => {
     const formLogin = document.getElementById('form-admin-login');
     if (formLogin) {
@@ -20,10 +28,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Matriculas
     document.getElementById('admin-recargar')?.addEventListener('click', cargarMatriculasAdmin);
     document.getElementById('admin-estado')?.addEventListener('change', cargarMatriculasAdmin);
-    
+
     document.getElementById('btn-nueva-matricula')?.addEventListener('click', async () => {
         document.getElementById('form-matricula').reset();
-        
+
         const select = document.getElementById('matricula-categoria');
         if (select) {
             select.innerHTML = '<option value="">Cargando...</option>';
@@ -33,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (activas.length === 0) {
                     select.innerHTML = '<option value="">No hay categorías activas</option>';
                 } else {
-                    select.innerHTML = '<option value="">Seleccione...</option>' + 
+                    select.innerHTML = '<option value="">Seleccione...</option>' +
                         activas.map(c => `<option value="${c.id}">${c.nombre} (S/ ${c.montoMatricula ? c.montoMatricula.toFixed(2) : '0.00'})</option>`).join('');
                 }
             } catch (error) {
@@ -47,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('form-matricula-card').classList.add('oculto');
     });
     document.getElementById('form-matricula')?.addEventListener('submit', guardarMatriculaAdmin);
-    
+
     document.getElementById('admin-body')?.addEventListener('click', async (event) => {
         const btnAnular = event.target.closest('.btn-anular');
         if (btnAnular) {
@@ -82,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    document.getElementById('btn-exportar-reporte')?.addEventListener('click', exportarReporteTxt);
+    document.getElementById('btn-exportar-reporte')?.addEventListener('click', exportarReportePdf);
 
     // CRUD Event Listeners
     initCrudListeners();
@@ -95,12 +103,12 @@ function initAdminNavigation() {
         nav.addEventListener('click', () => {
             navs.forEach(n => n.classList.remove('activo'));
             views.forEach(v => v.classList.add('oculto'));
-            
+
             nav.classList.add('activo');
             const viewId = `view-${nav.dataset.view}`;
             const viewEl = document.getElementById(viewId);
-            if(viewEl) viewEl.classList.remove('oculto');
-            
+            if (viewEl) viewEl.classList.remove('oculto');
+
             if (nav.dataset.view === 'matriculas') cargarMatriculasAdmin();
             if (nav.dataset.view === 'alumnos') cargarAlumnosAdmin();
             if (nav.dataset.view === 'categorias') cargarCategoriasAdmin();
@@ -151,7 +159,7 @@ function mostrarAdmin() {
     if (login) login.classList.add('oculto');
     if (content) content.classList.remove('oculto');
     const userDisplay = document.getElementById('admin-user-display');
-    if(userDisplay && credencialesAdmin) {
+    if (userDisplay && credencialesAdmin) {
         userDisplay.textContent = credencialesAdmin.nombre || credencialesAdmin.username || 'Administrador';
     }
 }
@@ -173,32 +181,60 @@ async function cargarMatriculasAdmin() {
         adminState.matriculas = await obtenerMatriculasAdmin(credencialesAdmin, estado);
         if (!adminState.matriculas.length) {
             tbody.innerHTML = '<tr><td colspan="6" class="tabla-cargando">No hay matriculas.</td></tr>';
+            renderPagination('pagination-matriculas', 1, 1, () => { });
             return;
         }
-
-        tbody.innerHTML = adminState.matriculas.map(item => {
-            const fecha = formatearFecha(item.fechaRegistro);
-            const estadoClase = obtenerClaseEstado(item.estado);
-            const referencia = item.referenciaPago || 'N/A';
-
-            return `
-                <tr>
-                    <td>${fecha}</td>
-                    <td>${item.alumno || 'N/A'}</td>
-                    <td>${item.categoria || 'N/A'}</td>
-                    <td><span class="estado-badge ${estadoClase}">${item.estado || 'N/A'}</span></td>
-                    <td>${referencia}</td>
-                    <td>
-                        <button class="btn-accion btn-anular" data-id="${item.id}">Anular</button>
-                        <button class="btn-accion btn-cambiar" data-id="${item.id}">Cambiar categoria</button>
-                        <button class="btn-accion btn-eliminar" data-id="${item.id}">Eliminar</button>
-                    </td>
-                </tr>
-            `;
-        }).join('');
+        adminPagination.matriculas = 1;
+        renderMatriculasTabla();
     } catch (error) {
         tbody.innerHTML = '<tr><td colspan="6" class="tabla-cargando">Error al cargar matriculas.</td></tr>';
+        renderPagination('pagination-matriculas', 1, 1, () => { });
     }
+}
+
+function renderMatriculasTabla() {
+    const tbody = document.getElementById('admin-body');
+    if (!tbody) return;
+
+    const items = [...adminState.matriculas].sort((a, b) => {
+        const aTime = new Date(a.fechaRegistro).getTime();
+        const bTime = new Date(b.fechaRegistro).getTime();
+        if (!Number.isNaN(aTime) && !Number.isNaN(bTime)) {
+            return bTime - aTime;
+        }
+        return (b.id || 0) - (a.id || 0);
+    });
+
+    const totalPages = Math.max(1, Math.ceil(items.length / PAGE_SIZE));
+    const currentPage = Math.min(adminPagination.matriculas, totalPages);
+    const start = (currentPage - 1) * PAGE_SIZE;
+    const pageItems = items.slice(start, start + PAGE_SIZE);
+
+    tbody.innerHTML = pageItems.map(item => {
+        const fecha = formatearFecha(item.fechaRegistro);
+        const estadoClase = obtenerClaseEstado(item.estado);
+        const referencia = item.referenciaPago || 'N/A';
+
+        return `
+            <tr>
+                <td>${fecha}</td>
+                <td>${item.alumno || 'N/A'}</td>
+                <td>${item.categoria || 'N/A'}</td>
+                <td><span class="estado-badge ${estadoClase}">${item.estado || 'N/A'}</span></td>
+                <td>${referencia}</td>
+                <td>
+                    <button class="btn-accion btn-anular" data-id="${item.id}">Anular</button>
+                    <button class="btn-accion btn-cambiar" data-id="${item.id}">Cambiar categoria</button>
+                    <button class="btn-accion btn-eliminar" data-id="${item.id}">Eliminar</button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+
+    renderPagination('pagination-matriculas', currentPage, totalPages, (page) => {
+        adminPagination.matriculas = page;
+        renderMatriculasTabla();
+    });
 }
 
 async function guardarMatriculaAdmin(e) {
@@ -206,12 +242,12 @@ async function guardarMatriculaAdmin(e) {
     if (!credencialesAdmin) return;
     const errorEl = document.getElementById('matricula-error');
     errorEl.textContent = '';
-    
+
     const datos = {
         alumnoDni: document.getElementById('matricula-dni').value,
         categoriaId: Number(document.getElementById('matricula-categoria').value)
     };
-    
+
     try {
         await crearMatriculaAdmin(credencialesAdmin, datos);
         document.getElementById('form-matricula-card').classList.add('oculto');
@@ -359,9 +395,14 @@ function renderReporteBarras(data) {
     }).join('');
 }
 
-function exportarReporteTxt() {
+function exportarReportePdf() {
     if (!adminState.reporte) {
         alert('Genera un reporte antes de exportar.');
+        return;
+    }
+
+    if (!window.jspdf || !window.jspdf.jsPDF) {
+        alert('No se pudo cargar jsPDF. Verifica la conexion.');
         return;
     }
 
@@ -370,24 +411,36 @@ function exportarReporteTxt() {
         ? `S/ ${Number(data.montoConfirmado).toFixed(2)}`
         : 'S/ 0.00';
     const periodo = `${String(data.mes).padStart(2, '0')}/${data.anio}`;
-    const contenido = `REPORTE MENSUAL - ACADEMIA DE FUTBOL\n` +
-        `Periodo: ${periodo}\n` +
-        `Total matriculas: ${data.totalMatriculas}\n` +
-        `Confirmadas: ${data.confirmadas}\n` +
-        `Pendientes: ${data.pendientes}\n` +
-        `Rechazadas: ${data.rechazadas}\n` +
-        `Anuladas: ${data.anuladas}\n` +
-        `Monto confirmado: ${monto}\n`;
 
-    const blob = new Blob([contenido], { type: 'text/plain;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `Reporte_${periodo.replace('/', '-')}.txt`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    const doc = new window.jspdf.jsPDF({ unit: 'pt', format: 'a4' });
+    const title = 'REPORTE MENSUAL - ACADEMIA DE FUTBOL';
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(14);
+    doc.text(title, 40, 40);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(11);
+    doc.text(`Periodo: ${periodo}`, 40, 62);
+
+    const body = [
+        ['Total matriculas', String(data.totalMatriculas ?? 0)],
+        ['Confirmadas', String(data.confirmadas ?? 0)],
+        ['Pendientes', String(data.pendientes ?? 0)],
+        ['Rechazadas', String(data.rechazadas ?? 0)],
+        ['Anuladas', String(data.anuladas ?? 0)],
+        ['Monto confirmado', monto]
+    ];
+
+    doc.autoTable({
+        startY: 80,
+        head: [['Indicador', 'Valor']],
+        body: body,
+        theme: 'striped',
+        headStyles: { fillColor: [11, 61, 145] },
+        styles: { fontSize: 10, cellPadding: 6 }
+    });
+
+    doc.save(`Reporte_${periodo.replace('/', '-')}.pdf`);
 }
 
 // ----------------------------------------------------
@@ -466,24 +519,45 @@ async function cargarAlumnosAdmin() {
         alumnosList = await obtenerAlumnosAdmin(credencialesAdmin);
         if (!alumnosList.length) {
             tbody.innerHTML = '<tr><td colspan="6" class="tabla-cargando">No hay alumnos registrados.</td></tr>';
+            renderPagination('pagination-alumnos', 1, 1, () => { });
             return;
         }
-        tbody.innerHTML = alumnosList.map(a => `
-            <tr>
-                <td>${a.nombreCompleto}</td>
-                <td>${a.dni}</td>
-                <td>${a.fechaNacimiento}</td>
-                <td>${a.correoTutor}</td>
-                <td>${a.activo ? '<span style="color:green;font-weight:bold;">Activo</span>' : '<span style="color:red;">Inactivo</span>'}</td>
-                <td>
-                    <button class="btn-accion btn-editar-alumno" data-id="${a.id}">Editar</button>
-                    <button class="btn-accion btn-eliminar-alumno" data-id="${a.id}">Eliminar</button>
-                </td>
-            </tr>
-        `).join('');
+        adminPagination.alumnos = 1;
+        renderAlumnosTabla();
     } catch (e) {
         tbody.innerHTML = `<tr><td colspan="6" class="tabla-cargando">Error: ${e.message}</td></tr>`;
+        renderPagination('pagination-alumnos', 1, 1, () => { });
     }
+}
+
+function renderAlumnosTabla() {
+    const tbody = document.getElementById('alumnos-body');
+    if (!tbody) return;
+
+    const items = [...alumnosList].sort((a, b) => (b.id || 0) - (a.id || 0));
+    const totalPages = Math.max(1, Math.ceil(items.length / PAGE_SIZE));
+    const currentPage = Math.min(adminPagination.alumnos, totalPages);
+    const start = (currentPage - 1) * PAGE_SIZE;
+    const pageItems = items.slice(start, start + PAGE_SIZE);
+
+    tbody.innerHTML = pageItems.map(a => `
+        <tr>
+            <td>${a.nombreCompleto}</td>
+            <td>${a.dni}</td>
+            <td>${a.fechaNacimiento}</td>
+            <td>${a.correoTutor}</td>
+            <td>${a.activo ? '<span style="color:green;font-weight:bold;">Activo</span>' : '<span style="color:red;">Inactivo</span>'}</td>
+            <td>
+                <button class="btn-accion btn-editar-alumno" data-id="${a.id}">Editar</button>
+                <button class="btn-accion btn-eliminar-alumno" data-id="${a.id}">Eliminar</button>
+            </td>
+        </tr>
+    `).join('');
+
+    renderPagination('pagination-alumnos', currentPage, totalPages, (page) => {
+        adminPagination.alumnos = page;
+        renderAlumnosTabla();
+    });
 }
 
 async function guardarAlumno(e) {
@@ -543,24 +617,45 @@ async function cargarCategoriasAdmin() {
         categoriasList = await obtenerCategoriasAdmin(credencialesAdmin);
         if (!categoriasList.length) {
             tbody.innerHTML = '<tr><td colspan="6" class="tabla-cargando">No hay categorías.</td></tr>';
+            renderPagination('pagination-categorias', 1, 1, () => { });
             return;
         }
-        tbody.innerHTML = categoriasList.map(c => `
-            <tr>
-                <td>${c.nombre}</td>
-                <td>${c.edadMinima} - ${c.edadMaxima} años</td>
-                <td>${c.cuposDisponibles}</td>
-                <td>S/ ${c.montoMatricula ? c.montoMatricula.toFixed(2) : '0.00'}</td>
-                <td>${c.activo ? '<span style="color:green;font-weight:bold;">Activa</span>' : '<span style="color:red;">Inactiva</span>'}</td>
-                <td>
-                    <button class="btn-accion btn-editar-categoria" data-id="${c.id}">Editar</button>
-                    <button class="btn-accion btn-eliminar-categoria" data-id="${c.id}">Eliminar</button>
-                </td>
-            </tr>
-        `).join('');
+        adminPagination.categorias = 1;
+        renderCategoriasTabla();
     } catch (e) {
         tbody.innerHTML = `<tr><td colspan="6" class="tabla-cargando">Error: ${e.message}</td></tr>`;
+        renderPagination('pagination-categorias', 1, 1, () => { });
     }
+}
+
+function renderCategoriasTabla() {
+    const tbody = document.getElementById('categorias-body');
+    if (!tbody) return;
+
+    const items = [...categoriasList].sort((a, b) => (b.id || 0) - (a.id || 0));
+    const totalPages = Math.max(1, Math.ceil(items.length / PAGE_SIZE));
+    const currentPage = Math.min(adminPagination.categorias, totalPages);
+    const start = (currentPage - 1) * PAGE_SIZE;
+    const pageItems = items.slice(start, start + PAGE_SIZE);
+
+    tbody.innerHTML = pageItems.map(c => `
+        <tr>
+            <td>${c.nombre}</td>
+            <td>${c.edadMinima} - ${c.edadMaxima} años</td>
+            <td>${c.cuposDisponibles}</td>
+            <td>S/ ${c.montoMatricula ? c.montoMatricula.toFixed(2) : '0.00'}</td>
+            <td>${c.activo ? '<span style="color:green;font-weight:bold;">Activa</span>' : '<span style="color:red;">Inactiva</span>'}</td>
+            <td>
+                <button class="btn-accion btn-editar-categoria" data-id="${c.id}">Editar</button>
+                <button class="btn-accion btn-eliminar-categoria" data-id="${c.id}">Eliminar</button>
+            </td>
+        </tr>
+    `).join('');
+
+    renderPagination('pagination-categorias', currentPage, totalPages, (page) => {
+        adminPagination.categorias = page;
+        renderCategoriasTabla();
+    });
 }
 
 async function guardarCategoria(e) {
@@ -620,22 +715,74 @@ async function cargarUsuariosAdmin() {
         usuariosList = await obtenerUsuariosAdmin(credencialesAdmin);
         if (!usuariosList.length) {
             tbody.innerHTML = '<tr><td colspan="4" class="tabla-cargando">No hay administradores.</td></tr>';
+            renderPagination('pagination-usuarios', 1, 1, () => { });
             return;
         }
-        tbody.innerHTML = usuariosList.map(u => `
-            <tr>
-                <td>${u.nombre}</td>
-                <td>${u.username}</td>
-                <td>${u.activo ? '<span style="color:green;font-weight:bold;">Activo</span>' : '<span style="color:red;">Inactivo</span>'}</td>
-                <td>
-                    <button class="btn-accion btn-editar-usuario" data-id="${u.id}">Editar</button>
-                    <button class="btn-accion btn-eliminar-usuario" data-id="${u.id}">Eliminar</button>
-                </td>
-            </tr>
-        `).join('');
+        adminPagination.usuarios = 1;
+        renderUsuariosTabla();
     } catch (e) {
         tbody.innerHTML = `<tr><td colspan="4" class="tabla-cargando">Error: ${e.message}</td></tr>`;
+        renderPagination('pagination-usuarios', 1, 1, () => { });
     }
+}
+
+function renderUsuariosTabla() {
+    const tbody = document.getElementById('usuarios-body');
+    if (!tbody) return;
+
+    const items = [...usuariosList].sort((a, b) => (b.id || 0) - (a.id || 0));
+    const totalPages = Math.max(1, Math.ceil(items.length / PAGE_SIZE));
+    const currentPage = Math.min(adminPagination.usuarios, totalPages);
+    const start = (currentPage - 1) * PAGE_SIZE;
+    const pageItems = items.slice(start, start + PAGE_SIZE);
+
+    tbody.innerHTML = pageItems.map(u => `
+        <tr>
+            <td>${u.nombre}</td>
+            <td>${u.username}</td>
+            <td>${u.activo ? '<span style="color:green;font-weight:bold;">Activo</span>' : '<span style="color:red;">Inactivo</span>'}</td>
+            <td>
+                <button class="btn-accion btn-editar-usuario" data-id="${u.id}">Editar</button>
+                <button class="btn-accion btn-eliminar-usuario" data-id="${u.id}">Eliminar</button>
+            </td>
+        </tr>
+    `).join('');
+
+    renderPagination('pagination-usuarios', currentPage, totalPages, (page) => {
+        adminPagination.usuarios = page;
+        renderUsuariosTabla();
+    });
+}
+
+function renderPagination(containerId, currentPage, totalPages, onPageChange) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    if (totalPages <= 1) {
+        container.innerHTML = '';
+        return;
+    }
+
+    const buttons = [];
+    const prevDisabled = currentPage === 1 ? 'disabled' : '';
+    const nextDisabled = currentPage === totalPages ? 'disabled' : '';
+    buttons.push(`<button class="page-btn" ${prevDisabled} data-page="${currentPage - 1}">Anterior</button>`);
+
+    for (let i = 1; i <= totalPages; i++) {
+        const activeClass = i === currentPage ? 'active' : '';
+        buttons.push(`<button class="page-btn ${activeClass}" data-page="${i}">${i}</button>`);
+    }
+
+    buttons.push(`<button class="page-btn" ${nextDisabled} data-page="${currentPage + 1}">Siguiente</button>`);
+    container.innerHTML = buttons.join('');
+
+    container.querySelectorAll('button[data-page]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const page = Number(btn.getAttribute('data-page'));
+            if (!Number.isFinite(page) || page < 1 || page > totalPages) return;
+            onPageChange(page);
+        });
+    });
 }
 
 async function guardarUsuario(e) {
@@ -644,7 +791,7 @@ async function guardarUsuario(e) {
     errorEl.textContent = '';
     const id = document.getElementById('usuario-id').value;
     const pwd = document.getElementById('usuario-password').value;
-    
+
     if (!id && !pwd) {
         errorEl.textContent = 'La contraseña es obligatoria para nuevos usuarios.';
         return;

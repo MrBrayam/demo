@@ -99,12 +99,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            const btnTxt = event.target.closest('.btn-generar-txt');
-            if (btnTxt) {
-                const id = Number(btnTxt.getAttribute('data-id'));
+            const btnPdf = event.target.closest('.btn-generar-pdf');
+            if (btnPdf) {
+                const id = Number(btnPdf.getAttribute('data-id'));
                 const item = matriculasCliente.find(m => m.id === id);
                 if (item) {
-                    descargarReciboTxt(item);
+                    descargarReciboPdf(item);
                 }
             }
         });
@@ -243,8 +243,8 @@ function renderHistorial() {
         let accionHtml = '';
         if (item.estado === 'CONFIRMADA') {
             accionHtml = `
-                <button class="btn-accion btn-generar-txt" data-id="${item.id}">
-                    Recibo .txt
+                <button class="btn-accion btn-generar-pdf" data-id="${item.id}">
+                    Recibo PDF
                 </button>
             `;
         } else if (item.estado === 'PENDIENTE' || item.estado === 'RECHAZADA') {
@@ -388,7 +388,7 @@ async function procesarPagoPendiente() {
         mensajeEl.textContent = '¡Pago procesado con éxito!';
         mensajeEl.className = 'pago-mensaje exito'; // Usar estilo verde/exito si existe
 
-        // Descargar recibo .txt
+        // Descargar recibo PDF
         // Obtenemos los datos actualizados combinados con los locales
         const itemExitoso = {
             id: matriculaSeleccionada.id,
@@ -400,7 +400,7 @@ async function procesarPagoPendiente() {
             referenciaPago: resultado.referenciaPago || resultado.referencia || 'REF-N/A'
         };
 
-        descargarReciboTxt(itemExitoso);
+        descargarReciboPdf(itemExitoso);
 
         // Recargar datos y deseleccionar
         await cargarDatosCliente();
@@ -418,37 +418,43 @@ async function procesarPagoPendiente() {
     }
 }
 
-// TXT GENERATION
-function descargarReciboTxt(item) {
+function descargarReciboPdf(item) {
+    if (!window.jspdf || !window.jspdf.jsPDF) {
+        alert('No se pudo cargar jsPDF. Verifica la conexion.');
+        return;
+    }
+
     const fecha = formatearFecha(item.fechaRegistro);
     const monto = item.montoMatricula != null ? `S/ ${Number(item.montoMatricula).toFixed(2)}` : 'S/ -';
     const referencia = item.referenciaPago || 'N/A';
 
-    const contenido = `=========================================
-      ACADEMIA DE FÚTBOL "LOS CRACKS"
-         COMPROBANTE DE PAGO EXITOSO
-=========================================
-Fecha de Pago:  ${formatearFecha(new Date())}
-Fecha Matrícula:${fecha}
-Matrícula ID:   ${item.id}
-Alumno:         ${item.alumno || 'N/A'}
-Categoría:      ${item.categoria || 'N/A'}
-Monto Pagado:   ${monto}
-Estado:         ${item.estado || 'CONFIRMADA'}
-Referencia:     ${referencia}
-=========================================
-     ¡Gracias por su pago y preferencia!
-=========================================
-`;
+    const doc = new window.jspdf.jsPDF({ unit: 'pt', format: 'a4' });
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(14);
+    doc.text('COMPROBANTE DE PAGO - ACADEMIA DE FUTBOL', 40, 40);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(11);
+    doc.text(`Fecha de pago: ${formatearFecha(new Date())}`, 40, 62);
 
-    const blob = new Blob([contenido], { type: 'text/plain;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `Recibo_Pago_Matricula_${item.id}.txt`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    const body = [
+        ['Matricula ID', String(item.id)],
+        ['Alumno', item.alumno || 'N/A'],
+        ['Categoria', item.categoria || 'N/A'],
+        ['Monto', monto],
+        ['Estado', item.estado || 'CONFIRMADA'],
+        ['Fecha matricula', fecha],
+        ['Referencia', referencia]
+    ];
+
+    doc.autoTable({
+        startY: 80,
+        head: [['Detalle', 'Valor']],
+        body: body,
+        theme: 'striped',
+        headStyles: { fillColor: [11, 61, 145] },
+        styles: { fontSize: 10, cellPadding: 6 }
+    });
+
+    doc.save(`Recibo_Matricula_${item.id}.pdf`);
 }
 

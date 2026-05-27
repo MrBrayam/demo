@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,9 +8,12 @@
     <title>Administrador — Matriculas</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Newsreader:wght@300;400;600&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Newsreader:wght@300;400;600&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
 </head>
+
 <body class="theme-admin">
 
     <header class="global-header">
@@ -48,7 +52,8 @@
             <button class="admin-nav" data-view="categorias">Categorias</button>
             <button class="admin-nav" data-view="usuarios">Administradores</button>
             <button class="admin-nav" data-view="reportes">Reportes</button>
-            <a href="admin.html" class="btn-link secondary" style="margin-top: auto; text-align: center;">Cerrar sesion</a>
+            <a href="admin.html" class="btn-link secondary" style="margin-top: auto; text-align: center;">Cerrar
+                sesion</a>
         </aside>
 
         <main class="cliente-content">
@@ -107,10 +112,13 @@
                             </tr>
                         </thead>
                         <tbody id="admin-body">
-                            <tr><td colspan="6" class="tabla-cargando">Cargando matrículas...</td></tr>
+                            <tr>
+                                <td colspan="6" class="tabla-cargando">Cargando matrículas...</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
+                <div class="pagination" id="pagination-matriculas"></div>
             </section>
 
             <!-- ALUMNOS -->
@@ -183,10 +191,13 @@
                             </tr>
                         </thead>
                         <tbody id="alumnos-body">
-                            <tr><td colspan="6" class="tabla-cargando">Cargando alumnos...</td></tr>
+                            <tr>
+                                <td colspan="6" class="tabla-cargando">Cargando alumnos...</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
+                <div class="pagination" id="pagination-alumnos"></div>
             </section>
 
             <!-- CATEGORIAS -->
@@ -259,10 +270,13 @@
                             </tr>
                         </thead>
                         <tbody id="categorias-body">
-                            <tr><td colspan="6" class="tabla-cargando">Cargando categorías...</td></tr>
+                            <tr>
+                                <td colspan="6" class="tabla-cargando">Cargando categorías...</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
+                <div class="pagination" id="pagination-categorias"></div>
             </section>
 
             <!-- USUARIOS -->
@@ -323,10 +337,13 @@
                             </tr>
                         </thead>
                         <tbody id="usuarios-body">
-                            <tr><td colspan="4" class="tabla-cargando">Cargando administradores...</td></tr>
+                            <tr>
+                                <td colspan="4" class="tabla-cargando">Cargando administradores...</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
+                <div class="pagination" id="pagination-usuarios"></div>
             </section>
 
             <!-- REPORTES -->
@@ -346,7 +363,7 @@
                         </div>
                         <div class="admin-actions" style="margin-top: 12px;">
                             <button type="submit" class="btn-recargar">Generar reporte</button>
-                            <button type="button" class="btn-accion" id="btn-exportar-reporte">Exportar .txt</button>
+                            <button type="button" class="btn-accion" id="btn-exportar-reporte">Exportar PDF</button>
                         </div>
                     </form>
                     <div id="admin-reporte-resultado" class="reporte-resultado" style="margin-top: 20px;"></div>
@@ -356,8 +373,11 @@
         </main>
     </div>
 
-<script src="js/utils.js"></script>
-<script src="js/api.js"></script>
-<script src="js/admin.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.5.29/dist/jspdf.plugin.autotable.min.js"></script>
+    <script src="js/admin.js"></script>
 </body>
+
 </html>
