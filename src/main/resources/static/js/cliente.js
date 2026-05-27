@@ -68,6 +68,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    document.getElementById('btn-recargar-pagos')?.addEventListener('click', async () => {
+        await cargarDatosCliente();
+    });
+
+    document.getElementById('btn-recargar-historial')?.addEventListener('click', async () => {
+        await cargarDatosCliente();
+    });
+
     // 5. Table Clicks (Selecting pending payments and history shortcuts)
     const pendientesBody = document.getElementById('pendientes-body');
     if (pendientesBody) {

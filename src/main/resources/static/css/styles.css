@@ -340,9 +340,14 @@ button {
 }
 
 .login-panel {
-    max-width: 460px;
-    margin: 26px auto 10px;
-    padding: 0 20px;
+    width: 30%;            
+    max-width: 1400px;    
+    margin: 0 auto;         
+    padding: 125px 40px 60px;     
+    min-height: calc(100vh - 100px);
+    align-items: center;    
+    justify-content: center; 
+    box-sizing: border-box;
 }
 
 .cliente-layout,
@@ -778,6 +783,15 @@ select:focus-visible {
 
 .recent-header {
     margin: 20px 0 12px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.recent-title {
+    min-width: 220px;
 }
 
 .recent-header h2 {
