@@ -1,4 +1,5 @@
-const API_BASE = 'http://localhost:8080/api';
+const hostname = window.location.hostname || 'localhost';
+const API_BASE = `http://${hostname}:8080/api`;
 
 async function obtenerCategorias() {
     const response = await fetch(`${API_BASE}/matriculas/categorias`);
@@ -242,11 +243,7 @@ async function descargarConstancia(matriculaId) {
     }
     const blob = await response.blob();
     const url = URL.createObjectURL(blob);
-    const enlace = document.createElement('a');
-    enlace.href = url;
-    enlace.download = `constancia_${matriculaId}.pdf`;
-    enlace.click();
-    URL.revokeObjectURL(url);
+    window.open(url, '_blank');
 }
 
 /*Verifica si el alumno existe y si no, lo crea*/

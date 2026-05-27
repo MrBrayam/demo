@@ -455,6 +455,13 @@ function descargarReciboPdf(item) {
         styles: { fontSize: 10, cellPadding: 6 }
     });
 
-    doc.save(`Recibo_Matricula_${item.id}.pdf`);
+    // Set PDF properties to give the new browser tab a meaningful title
+    doc.setProperties({
+        title: `Recibo_Matricula_${item.id}`
+    });
+
+    const pdfBlob = doc.output('blob');
+    const blobURL = URL.createObjectURL(pdfBlob);
+    window.open(blobURL, '_blank');
 }
 

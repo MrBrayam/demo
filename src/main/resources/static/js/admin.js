@@ -440,7 +440,14 @@ function exportarReportePdf() {
         styles: { fontSize: 10, cellPadding: 6 }
     });
 
-    doc.save(`Reporte_${periodo.replace('/', '-')}.pdf`);
+    // Set PDF properties to give the new browser tab a meaningful title
+    doc.setProperties({
+        title: `Reporte_${periodo.replace('/', '-')}`
+    });
+
+    const pdfBlob = doc.output('blob');
+    const blobURL = URL.createObjectURL(pdfBlob);
+    window.open(blobURL, '_blank');
 }
 
 // ----------------------------------------------------
