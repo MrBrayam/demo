@@ -20,6 +20,31 @@ const adminSearch = {
     usuarios: ''
 };
 
+// ----------------------------------------------------
+// Client-side validation helpers
+// ----------------------------------------------------
+function showError(elId, message) {
+    const el = document.getElementById(elId);
+    if (el) {
+        el.textContent = message;
+        if (typeof el.scrollIntoView === 'function') el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } else {
+        console.error('Error element not found:', elId, message);
+    }
+}
+
+function clearError(elId) {
+    const el = document.getElementById(elId);
+    if (el) el.textContent = '';
+}
+
+function isValidEmail(email) {
+    if (!email) return false;
+    // simple email validation
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+
 document.addEventListener('DOMContentLoaded', () => {
     const formLogin = document.getElementById('form-admin-login');
     if (formLogin) {
@@ -62,6 +87,14 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('form-matricula-card').classList.add('oculto');
     });
     document.getElementById('form-matricula')?.addEventListener('submit', guardarMatriculaAdmin);
+
+    // Enforce numeric-only and max length for DNI inputs
+    document.getElementById('matricula-dni')?.addEventListener('input', (e) => {
+        e.target.value = (e.target.value || '').replace(/\D/g, '').slice(0, 8);
+    });
+    document.getElementById('alumno-dni')?.addEventListener('input', (e) => {
+        e.target.value = (e.target.value || '').replace(/\D/g, '').slice(0, 8);
+    });
 
     document.getElementById('admin-body')?.addEventListener('click', async (event) => {
         const btnAnular = event.target.closest('.btn-anular');
@@ -277,20 +310,34 @@ function renderMatriculasTabla() {
 async function guardarMatriculaAdmin(e) {
     e.preventDefault();
     if (!credencialesAdmin) return;
-    const errorEl = document.getElementById('matricula-error');
-    errorEl.textContent = '';
+    clearError('matricula-error');
 
-    const datos = {
-        alumnoDni: document.getElementById('matricula-dni').value,
-        categoriaId: Number(document.getElementById('matricula-categoria').value)
-    };
+    const alumnoDni = (document.getElementById('matricula-dni').value || '').trim();
+    const categoriaVal = document.getElementById('matricula-categoria').value;
+    const categoriaId = Number(categoriaVal);
+
+    if (!alumnoDni) {
+        showError('matricula-error', 'El DNI del alumno es obligatorio.');
+        return;
+    }
+    if (!/^[0-9]{8}$/.test(alumnoDni)) {
+        showError('matricula-error', 'El DNI debe contener 8 dígitos numéricos.');
+        return;
+    }
+
+    if (!categoriaVal || Number.isNaN(categoriaId) || categoriaId <= 0) {
+        showError('matricula-error', 'Selecciona una categoría válida.');
+        return;
+    }
+
+    const datos = { alumnoDni, categoriaId };
 
     try {
         await crearMatriculaAdmin(credencialesAdmin, datos);
         document.getElementById('form-matricula-card').classList.add('oculto');
         await cargarMatriculasAdmin();
     } catch (err) {
-        errorEl.textContent = err.message;
+        showError('matricula-error', err.message || 'Error al crear la matrícula.');
     }
 }
 
@@ -615,23 +662,51 @@ function renderAlumnosTabla() {
 
 async function guardarAlumno(e) {
     e.preventDefault();
-    const errorEl = document.getElementById('alumno-error');
-    errorEl.textContent = '';
+    clearError('alumno-error');
     const id = document.getElementById('alumno-id').value;
+    const nombre = (document.getElementById('alumno-nombre').value || '').trim();
+    const dni = (document.getElementById('alumno-dni').value || '').trim();
+    const fechaNacimiento = (document.getElementById('alumno-fecha').value || '').trim();
+    const correo = (document.getElementById('alumno-correo').value || '').trim();
+    const contrasena = document.getElementById('alumno-contrasena').value || null;
+    const activo = document.getElementById('alumno-activo').value === 'true';
+
+    if (!nombre) {
+        showError('alumno-error', 'El nombre del alumno es obligatorio.');
+        return;
+    }
+    if (!dni) {
+        showError('alumno-error', 'El DNI es obligatorio.');
+        return;
+    }
+    if (!/^[0-9]{8}$/.test(dni)) {
+        showError('alumno-error', 'El DNI debe contener 8 dígitos numéricos.');
+        return;
+    }
+    if (!fechaNacimiento) {
+        showError('alumno-error', 'La fecha de nacimiento es obligatoria.');
+        return;
+    }
+    if (!correo || !isValidEmail(correo)) {
+        showError('alumno-error', 'Ingrese un correo de tutor válido.');
+        return;
+    }
+
     const datos = {
-        nombreCompleto: document.getElementById('alumno-nombre').value,
-        dni: document.getElementById('alumno-dni').value,
-        fechaNacimiento: document.getElementById('alumno-fecha').value,
-        correoTutor: document.getElementById('alumno-correo').value,
-        contrasena: document.getElementById('alumno-contrasena').value || null,
-        activo: document.getElementById('alumno-activo').value === 'true'
+        nombreCompleto: nombre,
+        dni: dni,
+        fechaNacimiento: fechaNacimiento,
+        correoTutor: correo,
+        contrasena: contrasena,
+        activo: activo
     };
+
     try {
         await guardarAlumnoAdmin(credencialesAdmin, datos, id);
         document.getElementById('form-alumno-card').classList.add('oculto');
         await cargarAlumnosAdmin();
     } catch (err) {
-        errorEl.textContent = err.message;
+        showError('alumno-error', err.message || 'Error al guardar alumno.');
     }
 }
 
@@ -717,23 +792,52 @@ function renderCategoriasTabla() {
 
 async function guardarCategoria(e) {
     e.preventDefault();
-    const errorEl = document.getElementById('categoria-error');
-    errorEl.textContent = '';
+    clearError('categoria-error');
     const id = document.getElementById('categoria-id').value;
+    const nombre = (document.getElementById('categoria-nombre').value || '').trim();
+    const montoVal = document.getElementById('categoria-monto').value;
+    const edadMin = parseInt(document.getElementById('categoria-edadmin').value);
+    const edadMax = parseInt(document.getElementById('categoria-edadmax').value);
+    const cupos = parseInt(document.getElementById('categoria-cupos').value);
+    const activo = document.getElementById('categoria-activo').value === 'true';
+
+    if (!nombre) {
+        showError('categoria-error', 'El nombre de la categoría es obligatorio.');
+        return;
+    }
+    const monto = parseFloat(montoVal);
+    if (Number.isNaN(monto) || monto < 0) {
+        showError('categoria-error', 'Ingrese un monto válido (≥ 0).');
+        return;
+    }
+    if (Number.isNaN(edadMin) || Number.isNaN(edadMax) || edadMin < 0 || edadMax < 0) {
+        showError('categoria-error', 'Ingrese edades válidas.');
+        return;
+    }
+    if (edadMin > edadMax) {
+        showError('categoria-error', 'La edad mínima no puede ser mayor a la máxima.');
+        return;
+    }
+    if (Number.isNaN(cupos) || cupos < 0) {
+        showError('categoria-error', 'Ingrese un número de cupos válido (>=0).');
+        return;
+    }
+
     const datos = {
-        nombre: document.getElementById('categoria-nombre').value,
-        montoMatricula: parseFloat(document.getElementById('categoria-monto').value),
-        edadMinima: parseInt(document.getElementById('categoria-edadmin').value),
-        edadMaxima: parseInt(document.getElementById('categoria-edadmax').value),
-        cuposDisponibles: parseInt(document.getElementById('categoria-cupos').value),
-        activo: document.getElementById('categoria-activo').value === 'true'
+        nombre,
+        montoMatricula: monto,
+        edadMinima: edadMin,
+        edadMaxima: edadMax,
+        cuposDisponibles: cupos,
+        activo
     };
+
     try {
         await guardarCategoriaAdmin(credencialesAdmin, datos, id);
         document.getElementById('form-categoria-card').classList.add('oculto');
         await cargarCategoriasAdmin();
     } catch (err) {
-        errorEl.textContent = err.message;
+        showError('categoria-error', err.message || 'Error al guardar categoría.');
     }
 }
 
@@ -852,28 +956,33 @@ function renderPagination(containerId, currentPage, totalPages, onPageChange) {
 
 async function guardarUsuario(e) {
     e.preventDefault();
-    const errorEl = document.getElementById('usuario-error');
-    errorEl.textContent = '';
+    clearError('usuario-error');
     const id = document.getElementById('usuario-id').value;
+    const nombre = (document.getElementById('usuario-nombre').value || '').trim();
+    const username = (document.getElementById('usuario-username').value || '').trim();
     const pwd = document.getElementById('usuario-password').value;
+    const activo = document.getElementById('usuario-activo').value === 'true';
 
+    if (!nombre) {
+        showError('usuario-error', 'El nombre es obligatorio.');
+        return;
+    }
+    if (!username) {
+        showError('usuario-error', 'El nombre de usuario es obligatorio.');
+        return;
+    }
     if (!id && !pwd) {
-        errorEl.textContent = 'La contraseña es obligatoria para nuevos usuarios.';
+        showError('usuario-error', 'La contraseña es obligatoria para nuevos usuarios.');
         return;
     }
 
-    const datos = {
-        nombre: document.getElementById('usuario-nombre').value,
-        username: document.getElementById('usuario-username').value,
-        password: pwd || null,
-        activo: document.getElementById('usuario-activo').value === 'true'
-    };
+    const datos = { nombre, username, password: pwd || null, activo };
     try {
         await guardarUsuarioAdmin(credencialesAdmin, datos, id);
         document.getElementById('form-usuario-card').classList.add('oculto');
         await cargarUsuariosAdmin();
     } catch (err) {
-        errorEl.textContent = err.message;
+        showError('usuario-error', err.message || 'Error al guardar usuario.');
     }
 }
 

@@ -12,6 +12,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Enforce numeric-only for login DNI
+    document.getElementById('login-dni')?.addEventListener('input', (e) => {
+        e.target.value = (e.target.value || '').replace(/\D/g, '').slice(0, 8);
+    });
+
     // 2. Sidebar Navigation
     document.querySelectorAll('.cliente-nav').forEach(button => {
         button.addEventListener('click', () => {
@@ -126,6 +131,11 @@ async function manejarLoginCliente() {
     if (errorEl) errorEl.textContent = '';
     if (!dni || !contrasena) {
         if (errorEl) errorEl.textContent = 'Ingrese su DNI y contraseña.';
+        return;
+    }
+
+    if (!/^\d{8}$/.test(dni)) {
+        if (errorEl) errorEl.textContent = 'El DNI debe tener exactamente 8 dígitos numéricos.';
         return;
     }
 
