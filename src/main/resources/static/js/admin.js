@@ -2,7 +2,12 @@ let credencialesAdmin = null;
 
 const adminState = {
     matriculas: [],
-    reporte: null
+    reporte: null,
+    cambioCategoria: {
+        matriculaId: null,
+        categorias: [],
+        seleccionadaId: null
+    }
 };
 
 const PAGE_SIZE = 6;
@@ -131,6 +136,25 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     document.getElementById('btn-exportar-reporte')?.addEventListener('click', exportarReportePdf);
+
+    // Modal cambiar categoría
+    document.getElementById('btn-cerrar-modal-categoria')?.addEventListener('click', cerrarModalCategoria);
+    document.getElementById('btn-cancelar-cambio-categoria')?.addEventListener('click', cerrarModalCategoria);
+    document.getElementById('btn-confirmar-cambio-categoria')?.addEventListener('click', confirmarCambioCategoria);
+    document.getElementById('search-modal-categorias')?.addEventListener('input', renderModalCategorias);
+    document.getElementById('modal-cambiar-categoria')?.addEventListener('click', (event) => {
+        if (event.target.id === 'modal-cambiar-categoria') {
+            cerrarModalCategoria();
+        }
+    });
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            const modal = document.getElementById('modal-cambiar-categoria');
+            if (modal && !modal.classList.contains('oculto')) {
+                cerrarModalCategoria();
+            }
+        }
+    });
 
     // CRUD Event Listeners
     initCrudListeners();
@@ -359,14 +383,154 @@ async function manejarCambiar(button) {
     if (!credencialesAdmin) return;
     const id = Number(button.getAttribute('data-id'));
     if (!id) return;
-    const categoriaId = prompt('ID de nueva categoria:');
-    if (!categoriaId) return;
+    await abrirModalCategoria(id);
+}
+
+async function abrirModalCategoria(matriculaId) {
+    if (!credencialesAdmin) return;
+    const modal = document.getElementById('modal-cambiar-categoria');
+    const errorEl = document.getElementById('modal-categoria-error');
+    const listEl = document.getElementById('modal-categorias-list');
+    const confirmBtn = document.getElementById('btn-confirmar-cambio-categoria');
+    const metaEl = document.getElementById('modal-categoria-meta');
+    const searchEl = document.getElementById('search-modal-categorias');
+
+    if (!modal || !listEl || !confirmBtn || !metaEl) return;
+
+    const matricula = adminState.matriculas.find(item => Number(item.id) === Number(matriculaId));
+    adminState.cambioCategoria.matriculaId = Number(matriculaId);
+    adminState.cambioCategoria.seleccionadaId = null;
+
+    if (errorEl) errorEl.textContent = '';
+    if (searchEl) searchEl.value = '';
+    confirmBtn.disabled = true;
+
+    metaEl.innerHTML = `
+        <span>Matrícula: ${matricula?.id ?? matriculaId}</span>
+        <span>Alumno: ${matricula?.alumno || 'N/A'}</span>
+        <span>Categoría actual: ${matricula?.categoria || 'N/A'}</span>
+    `;
+
+    listEl.innerHTML = '<div class="tabla-cargando">Cargando categorías disponibles...</div>';
+    modal.classList.remove('oculto');
+    modal.setAttribute('aria-hidden', 'false');
 
     try {
-        await actualizarCategoriaAdmin(credencialesAdmin, id, Number(categoriaId));
+        const categorias = await obtenerCategoriasAdmin(credencialesAdmin);
+        adminState.cambioCategoria.categorias = categorias
+            .filter(c => c.activo && Number(c.cuposDisponibles || 0) > 0)
+            .sort((a, b) => (a.nombre || '').localeCompare(b.nombre || ''));
+        renderModalCategorias();
+    } catch (error) {
+        listEl.innerHTML = '<div class="tabla-cargando">No se pudieron cargar las categorías.</div>';
+        if (errorEl) errorEl.textContent = error.message || 'Error al cargar categorías.';
+    }
+}
+
+function renderModalCategorias() {
+    const listEl = document.getElementById('modal-categorias-list');
+    const confirmBtn = document.getElementById('btn-confirmar-cambio-categoria');
+    if (!listEl) return;
+
+    const q = (document.getElementById('search-modal-categorias')?.value || '').trim().toLowerCase();
+    const categorias = adminState.cambioCategoria.categorias || [];
+    const items = q
+        ? categorias.filter(c => {
+            const nombre = (c.nombre || '').toLowerCase();
+            const rango = `${c.edadMinima ?? ''}-${c.edadMaxima ?? ''}`;
+            return nombre.includes(q) || rango.includes(q);
+        })
+        : categorias;
+
+    if (!items.length) {
+        listEl.innerHTML = '<div class="tabla-cargando">No hay categorías disponibles para mostrar.</div>';
+        if (confirmBtn) confirmBtn.disabled = true;
+        return;
+    }
+
+    listEl.innerHTML = items.map(cat => {
+        const selected = adminState.cambioCategoria.seleccionadaId === Number(cat.id) ? 'selected' : '';
+        const cupos = Number(cat.cuposDisponibles || 0);
+        const cupoLabel = cupos === 1 ? '1 cupo disponible' : `${cupos} cupos disponibles`;
+        return `
+            <button type="button" class="categoria-card ${selected}" data-categoria-id="${cat.id}">
+                <h4>${cat.nombre}</h4>
+                <p>Edades: ${cat.edadMinima} - ${cat.edadMaxima} años</p>
+                <p>Monto: S/ ${cat.montoMatricula ? Number(cat.montoMatricula).toFixed(2) : '0.00'}</p>
+                <span class="categoria-pill ok">${cupoLabel}</span>
+            </button>
+        `;
+    }).join('');
+
+    listEl.querySelectorAll('.categoria-card').forEach(card => {
+        card.addEventListener('click', () => {
+            const categoriaId = Number(card.getAttribute('data-categoria-id'));
+            adminState.cambioCategoria.seleccionadaId = categoriaId;
+            renderModalCategorias();
+            if (confirmBtn) confirmBtn.disabled = !categoriaId;
+        });
+    });
+
+    if (confirmBtn) {
+        confirmBtn.disabled = !adminState.cambioCategoria.seleccionadaId;
+    }
+}
+
+function cerrarModalCategoria() {
+    const modal = document.getElementById('modal-cambiar-categoria');
+    const errorEl = document.getElementById('modal-categoria-error');
+    const searchEl = document.getElementById('search-modal-categorias');
+    if (modal) {
+        modal.classList.add('oculto');
+        modal.setAttribute('aria-hidden', 'true');
+    }
+    if (errorEl) errorEl.textContent = '';
+    if (searchEl) searchEl.value = '';
+    adminState.cambioCategoria.matriculaId = null;
+    adminState.cambioCategoria.seleccionadaId = null;
+    adminState.cambioCategoria.categorias = [];
+}
+
+async function confirmarCambioCategoria() {
+    if (!credencialesAdmin) return;
+    const errorEl = document.getElementById('modal-categoria-error');
+    const btn = document.getElementById('btn-confirmar-cambio-categoria');
+    const matriculaId = adminState.cambioCategoria.matriculaId;
+    const categoriaId = adminState.cambioCategoria.seleccionadaId;
+
+    if (!matriculaId) return;
+    if (!categoriaId) {
+        if (errorEl) errorEl.textContent = 'Selecciona una categoría antes de confirmar.';
+        return;
+    }
+
+    const matricula = adminState.matriculas.find(item => Number(item.id) === Number(matriculaId));
+    if (matricula && matricula.categoria) {
+        const categoriaSeleccionada = adminState.cambioCategoria.categorias.find(cat => Number(cat.id) === Number(categoriaId));
+        if (categoriaSeleccionada && categoriaSeleccionada.nombre === matricula.categoria) {
+            if (errorEl) errorEl.textContent = 'Selecciona una categoría diferente a la actual.';
+            return;
+        }
+    }
+
+    if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Guardando...';
+    }
+
+    if (errorEl) errorEl.textContent = '';
+
+    try {
+        await actualizarCategoriaAdmin(credencialesAdmin, Number(matriculaId), Number(categoriaId));
+        cerrarModalCategoria();
         await cargarMatriculasAdmin();
     } catch (error) {
-        alert(error.message);
+        if (errorEl) errorEl.textContent = error.message || 'No se pudo cambiar la categoría.';
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.textContent = 'Confirmar cambio';
+        }
     }
 }
 

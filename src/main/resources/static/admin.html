@@ -385,6 +385,34 @@
         </main>
     </div>
 
+    <div class="modal-overlay oculto" id="modal-cambiar-categoria" aria-hidden="true">
+        <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-cambiar-categoria-title">
+            <div class="modal-header">
+                <div>
+                    <h3 id="modal-cambiar-categoria-title">Cambiar categoría</h3>
+                    <p>Selecciona una categoría disponible. Se muestran los cupos actuales.</p>
+                </div>
+                <button type="button" class="modal-close" id="btn-cerrar-modal-categoria" aria-label="Cerrar modal">×</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="modal-meta" id="modal-categoria-meta"></div>
+                <div class="modal-search-box">
+                    <input type="text" id="search-modal-categorias" class="admin-search" placeholder="Buscar categoría..." aria-label="Buscar categoría en modal">
+                </div>
+                <div class="modal-list" id="modal-categorias-list">
+                    <div class="tabla-cargando">Cargando categorías...</div>
+                </div>
+                <p class="login-error" id="modal-categoria-error"></p>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn-accion" id="btn-cancelar-cambio-categoria">Cancelar</button>
+                <button type="button" class="btn-recargar" id="btn-confirmar-cambio-categoria" disabled>Confirmar cambio</button>
+            </div>
+        </div>
+    </div>
+
     <script src="js/utils.js"></script>
     <script src="js/api.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>

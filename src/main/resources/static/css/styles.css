@@ -1006,6 +1006,186 @@ select:focus-visible {
     margin-top: 8px;
 }
 
+/* Modal used to change matricula category */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(11, 18, 32, 0.55);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 18px;
+    z-index: 2000;
+}
+
+.modal-card {
+    width: min(920px, 100%);
+    max-height: 90vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-top: 4px solid var(--gold-500);
+    border-radius: 18px;
+    box-shadow: var(--shadow-2);
+}
+
+.modal-header,
+.modal-footer {
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.modal-header {
+    border-bottom: 1px solid var(--line);
+}
+
+.modal-header h3 {
+    font-family: var(--font-heading);
+    font-size: 20px;
+    color: var(--navy-700);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+.modal-header p {
+    color: var(--ink-500);
+    font-size: 13px;
+    margin-top: 4px;
+}
+
+.modal-close {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--surface-muted);
+    color: var(--ink-700);
+    font-size: 26px;
+    line-height: 1;
+    border: 1px solid var(--line);
+    flex: 0 0 auto;
+}
+
+.modal-body {
+    padding: 18px 20px 6px;
+    overflow: auto;
+}
+
+.modal-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 12px;
+    color: var(--ink-700);
+    font-size: 13px;
+}
+
+.modal-meta span {
+    background: var(--surface-muted);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 6px 10px;
+}
+
+.modal-search-box {
+    margin-bottom: 14px;
+}
+
+.modal-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+}
+
+.categoria-card {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--surface);
+    padding: 14px;
+    box-shadow: var(--shadow-1);
+    cursor: pointer;
+    transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.categoria-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--navy-600);
+    box-shadow: var(--shadow-2);
+}
+
+.categoria-card.selected {
+    border-color: var(--gold-500);
+    box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.22), var(--shadow-2);
+}
+
+.categoria-card.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.categoria-card h4 {
+    font-family: var(--font-heading);
+    font-size: 18px;
+    color: var(--navy-700);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.categoria-card p {
+    color: var(--ink-700);
+    font-size: 13px;
+    margin-bottom: 4px;
+}
+
+.categoria-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-family: var(--font-heading);
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    background: var(--surface-muted);
+    color: var(--navy-700);
+}
+
+.categoria-pill.ok {
+    background: rgba(30, 127, 79, 0.12);
+    color: var(--field-600);
+}
+
+.categoria-pill.empty {
+    background: rgba(212, 175, 55, 0.16);
+    color: var(--gold-600);
+}
+
+.modal-footer {
+    border-top: 1px solid var(--line);
+    background: linear-gradient(180deg, rgba(245, 245, 245, 0.65), rgba(255,255,255,0.95));
+}
+
+@media (max-width: 700px) {
+    .modal-card {
+        max-height: 92vh;
+    }
+    .modal-header,
+    .modal-footer {
+        padding: 14px 16px;
+    }
+    .modal-list {
+        grid-template-columns: 1fr;
+    }
+}
+
 .reporte-card {
     background: var(--surface);
     border: 1px solid var(--line);
