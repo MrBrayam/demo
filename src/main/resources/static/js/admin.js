@@ -13,6 +13,13 @@ const adminPagination = {
     usuarios: 1
 };
 
+const adminSearch = {
+    matriculas: '',
+    alumnos: '',
+    categorias: '',
+    usuarios: ''
+};
+
 document.addEventListener('DOMContentLoaded', () => {
     const formLogin = document.getElementById('form-admin-login');
     if (formLogin) {
@@ -94,6 +101,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // CRUD Event Listeners
     initCrudListeners();
+
+    // Search inputs
+    document.getElementById('search-matriculas')?.addEventListener('input', () => {
+        adminPagination.matriculas = 1;
+        renderMatriculasTabla();
+    });
+    document.getElementById('search-alumnos')?.addEventListener('input', () => {
+        adminPagination.alumnos = 1;
+        renderAlumnosTabla();
+    });
+    document.getElementById('search-categorias')?.addEventListener('input', () => {
+        adminPagination.categorias = 1;
+        renderCategoriasTabla();
+    });
+    document.getElementById('search-usuarios')?.addEventListener('input', () => {
+        adminPagination.usuarios = 1;
+        renderUsuariosTabla();
+    });
 });
 
 function initAdminNavigation() {
@@ -196,7 +221,7 @@ function renderMatriculasTabla() {
     const tbody = document.getElementById('admin-body');
     if (!tbody) return;
 
-    const items = [...adminState.matriculas].sort((a, b) => {
+    let items = [...adminState.matriculas].sort((a, b) => {
         const aTime = new Date(a.fechaRegistro).getTime();
         const bTime = new Date(b.fechaRegistro).getTime();
         if (!Number.isNaN(aTime) && !Number.isNaN(bTime)) {
@@ -204,6 +229,18 @@ function renderMatriculasTabla() {
         }
         return (b.id || 0) - (a.id || 0);
     });
+
+    // Apply search filter
+    const qMat = document.getElementById('search-matriculas')?.value.trim().toLowerCase() || '';
+    if (qMat) {
+        items = items.filter(item => {
+            const alumno = (item.alumno || '').toString().toLowerCase();
+            const categoria = (item.categoria || '').toString().toLowerCase();
+            const referencia = (item.referenciaPago || '').toString().toLowerCase();
+            const estado = (item.estado || '').toString().toLowerCase();
+            return alumno.includes(qMat) || categoria.includes(qMat) || referencia.includes(qMat) || estado.includes(qMat);
+        });
+    }
 
     const totalPages = Math.max(1, Math.ceil(items.length / PAGE_SIZE));
     const currentPage = Math.min(adminPagination.matriculas, totalPages);
@@ -541,7 +578,16 @@ function renderAlumnosTabla() {
     const tbody = document.getElementById('alumnos-body');
     if (!tbody) return;
 
-    const items = [...alumnosList].sort((a, b) => (b.id || 0) - (a.id || 0));
+    let items = [...alumnosList].sort((a, b) => (b.id || 0) - (a.id || 0));
+    const qAl = document.getElementById('search-alumnos')?.value.trim().toLowerCase() || '';
+    if (qAl) {
+        items = items.filter(a => {
+            const nombre = (a.nombreCompleto || '').toString().toLowerCase();
+            const dni = (a.dni || '').toString().toLowerCase();
+            const correo = (a.correoTutor || '').toString().toLowerCase();
+            return nombre.includes(qAl) || dni.includes(qAl) || correo.includes(qAl);
+        });
+    }
     const totalPages = Math.max(1, Math.ceil(items.length / PAGE_SIZE));
     const currentPage = Math.min(adminPagination.alumnos, totalPages);
     const start = (currentPage - 1) * PAGE_SIZE;
@@ -639,7 +685,11 @@ function renderCategoriasTabla() {
     const tbody = document.getElementById('categorias-body');
     if (!tbody) return;
 
-    const items = [...categoriasList].sort((a, b) => (b.id || 0) - (a.id || 0));
+    let items = [...categoriasList].sort((a, b) => (b.id || 0) - (a.id || 0));
+    const qCat = document.getElementById('search-categorias')?.value.trim().toLowerCase() || '';
+    if (qCat) {
+        items = items.filter(c => (c.nombre || '').toString().toLowerCase().includes(qCat));
+    }
     const totalPages = Math.max(1, Math.ceil(items.length / PAGE_SIZE));
     const currentPage = Math.min(adminPagination.categorias, totalPages);
     const start = (currentPage - 1) * PAGE_SIZE;
@@ -737,7 +787,15 @@ function renderUsuariosTabla() {
     const tbody = document.getElementById('usuarios-body');
     if (!tbody) return;
 
-    const items = [...usuariosList].sort((a, b) => (b.id || 0) - (a.id || 0));
+    let items = [...usuariosList].sort((a, b) => (b.id || 0) - (a.id || 0));
+    const qUsr = document.getElementById('search-usuarios')?.value.trim().toLowerCase() || '';
+    if (qUsr) {
+        items = items.filter(u => {
+            const nombre = (u.nombre || '').toString().toLowerCase();
+            const username = (u.username || '').toString().toLowerCase();
+            return nombre.includes(qUsr) || username.includes(qUsr);
+        });
+    }
     const totalPages = Math.max(1, Math.ceil(items.length / PAGE_SIZE));
     const currentPage = Math.min(adminPagination.usuarios, totalPages);
     const start = (currentPage - 1) * PAGE_SIZE;

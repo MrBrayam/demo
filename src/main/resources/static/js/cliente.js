@@ -76,6 +76,11 @@ document.addEventListener('DOMContentLoaded', () => {
         await cargarDatosCliente();
     });
 
+    // Historial search
+    document.getElementById('search-historial')?.addEventListener('input', () => {
+        renderHistorial();
+    });
+
     // 5. Table Clicks (Selecting pending payments and history shortcuts)
     const pendientesBody = document.getElementById('pendientes-body');
     if (pendientesBody) {
@@ -228,13 +233,24 @@ function renderPendientes() {
 function renderHistorial() {
     const tbody = document.getElementById('historial-body');
     if (!tbody) return;
+    const q = document.getElementById('search-historial')?.value.trim().toLowerCase() || '';
+    let items = [...matriculasCliente];
+    if (q) {
+        items = items.filter(item => {
+            const categoria = (item.categoria || '').toString().toLowerCase();
+            const referencia = (item.referenciaPago || '').toString().toLowerCase();
+            const estado = (item.estado || '').toString().toLowerCase();
+            const fecha = (item.fechaRegistro || '').toString().toLowerCase();
+            return categoria.includes(q) || referencia.includes(q) || estado.includes(q) || fecha.includes(q);
+        });
+    }
 
-    if (matriculasCliente.length === 0) {
+    if (items.length === 0) {
         tbody.innerHTML = '<tr><td colspan="6" class="tabla-cargando">No hay matrículas registradas.</td></tr>';
         return;
     }
 
-    tbody.innerHTML = matriculasCliente.map(item => {
+    tbody.innerHTML = items.map(item => {
         const fecha = formatearFecha(item.fechaRegistro);
         const monto = item.montoMatricula != null ? `S/ ${Number(item.montoMatricula).toFixed(2)}` : 'S/ -';
         const estadoClase = obtenerClaseEstado(item.estado);

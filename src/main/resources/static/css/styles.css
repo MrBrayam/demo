@@ -957,6 +957,55 @@ select:focus-visible {
     background: var(--surface);
 }
 
+/* Search inputs used in admin and client headers */
+.admin-search {
+    padding: 8px 12px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: linear-gradient(180deg, var(--surface), var(--surface));
+    color: var(--text);
+    min-width: 200px;
+    max-width: 360px;
+    width: 100%;
+    box-shadow: none;
+    transition: box-shadow 0.18s ease, border-color 0.18s ease, transform 0.12s ease;
+}
+
+.admin-search::placeholder {
+    color: var(--gray-400);
+}
+
+.admin-search:focus {
+    outline: none;
+    border-color: var(--navy-700);
+    box-shadow: 0 6px 18px rgba(11, 61, 145, 0.08), 0 2px 6px rgba(180,138,36,0.06);
+    transform: translateY(-1px);
+}
+
+/* Make search inputs fit nicely inside .admin-actions */
+.admin-actions .admin-search {
+    flex: 0 1 320px;
+}
+
+@media (max-width: 800px) {
+    .admin-actions {
+        gap: 10px;
+    }
+    .admin-actions .admin-search {
+        flex: 1 1 100%;
+        max-width: none;
+    }
+}
+
+/* Small helper to space search input under titles */
+.search-row {
+    margin-top: 10px;
+}
+
+.recent-title .search-row {
+    margin-top: 8px;
+}
+
 .reporte-card {
     background: var(--surface);
     border: 1px solid var(--line);
